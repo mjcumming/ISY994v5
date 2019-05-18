@@ -6,32 +6,49 @@
 
 from .device_base import Device_Base
 
+paddle_events = {'DON','DOFF','DIM','BRT','DFON','DFOF'}
+
 class Device_Insteon_Dimmer(Device_Base):
 
-    def __init__(self, node):
-        Device_Base.__init__(self,node)
+    def __init__(self, parent, device_info):
+        Device_Base.__init__(self,parent, device_info)
 
-        property_node = node.find('property')
+        self.add_property('level') #in percent
+        self.add_property('paddle_action')
         
-        if 'value' in property_node.attrib:
+        
+        if device_info.property_value:        
             try:
-                self.level = int(property_node.attrib['value'])
+                self.level = int(int(device_info.property_value)/255*100)
             except:
-                self.level = None
-
-    @property
-    def level(self):
-        return self._level
-
-    @level.setter
-    def level(self,level):
-        print ('set level to',level)
-        self._level = level
+                pass
 
     def process_websocket_event(self,event):
             #print ('device event')
             if event.control == 'ST':
-                print ('device {}. changed status to {}'.format(event.node,event.action))
-            elif event.control in ['DON','DOF']:
-                print ('device {}. changed local control {}'.format(event.node,event.action))
+                self.set_property('level',int(event.action)/255*100)
+                #print ('device {}. changed status to {}'.format(self.name,event.action))
 
+            elif event.control in paddle_events: #need to add other events
+                self.set_property('paddle_action',event.control)
+                #print ('device {}. changed local control {}'.format(self.name,event.action))
+
+    def set_level(self,level):
+        path = ('nodes/' + self.address + '/cmd/DON/' + str(int(level*255)))
+        return self.send_request(path)
+
+    def fast_on(self):
+        path = ('nodes/' + self.address + '/cmd/DFON')
+        return self.send_request(path)
+
+    def fast_off(self):
+        path = ('nodes/' + self.address + '/cmd/DFOF')
+        return self.send_request(path)
+
+    def brighten(self):
+        path = ('nodes/' + self.address + '/cmd/BRT')
+        return self.send_request(path)
+
+    def dim(self):
+        path = ('nodes/' + self.address + '/cmd/DIM')
+        return self.send_request(path)

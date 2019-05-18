@@ -2,49 +2,72 @@
 
 import xml.etree.ElementTree as ET
 
+from .device_info import Device_Info
+
 from .device_insteon_dimmer import Device_Insteon_Dimmer
 from .device_insteon_switch import Device_Insteon_Switch
 
-device_classes = {
+insteon_device_classes = {
     '1' : Device_Insteon_Dimmer,
     '2' : Device_Insteon_Switch,
 }
 
+device_events = {'add','remove','property'}
+
 class Device_Manager (object):
 
     def __init__(self, controller):
+        self.controller = controller
 
         self.device_list = {} # indexed by device(node) address
 
-        self.controller = controller
+    def process_device_nodes(self,root):
+        for device in root.iter('node'):
+            self.process_device_node(device)
+                
+    def process_device_node(self,node):
+        device_info = Device_Info(node)
 
-    def process_node(self,node):
-        _type = node.find('type')
-        address = node.find('address')
-        address_parts = address.text.split(' ')
+        if device_info.valid: # make sure we have the info we need
 
-        if _type is None: #missing 
-            print ('missing node type for node {}'.format(node))
-            return False
+            if device_info.family == '1': #insteon devices
+                #override device cat for keypadlinc dimmer buttons and change to switch type devices
+                if device_info.category == '1' and device_info.address_parts [3] != '1': # maybe use node flag
+                    device_info.category = '2'
 
-        types = _type.text.split('.')
-        device_category = types [0]
+                #create device
+                if device_info.category in insteon_device_classes:
+                    device_class = insteon_device_classes [device_info.category]
 
-        #override device cat for keypadlinc dimmer buttons and change to switch type devices
-        if device_category == '1' and address_parts [3] != '1': # maybe use node flag
-            device_category = '2'
+                    device = device_class(self,device_info)
+                    self.add_device(device)
+         
+    def send_request(self,path,query=None): 
+        return self.controller.send_request(path,query)
 
-        #create device
-        if device_category in device_classes:
-            device_class = device_classes [device_category]
-
-            device = device_class(node)
-
-            print(device)
+    def websocket_event(self,event):
+        print('Device event',event)
+        device = self.get_device(event.address)
+        device.process_websocket_event(event)
 
     def add_device(self,device):
         self.device_list [device.address] = device
+        self.device_event (device,'add')
 
+    def remove_device(self,address):
+        device = self.device_list [address]
+        del self.device_list [address]
+        self.device_event (device,'remove')
+
+    def get_device(self,address):
+        return self.device_list [address]
+
+    def device_property_change(self,device,property_,value):
+        self.device_event(device,'property',property_,value)
+    
+    def device_event(self,device,event,*args):
+        self.controller.device_event (device,event,args)
+    
     
         
 

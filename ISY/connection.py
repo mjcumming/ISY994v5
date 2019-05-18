@@ -22,11 +22,8 @@ class Connection(object):
         self._session = requests.Session()
         self._session.auth = (self._username,self._password)
 
-
-
     def compile_request(self, path, query=None):
         url = self._url + '/rest' + '/' + path #.join([quote(item) for item in path])
-
         if query is not None:
             url += '?' + urlencode(query)
 

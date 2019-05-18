@@ -3,24 +3,39 @@
 
 from .device_base import Device_Base
 
+paddle_events = {'DON','DOFF','DIM','BRT','DFON','DFOF'}
+
 class Device_Insteon_Switch(Device_Base):
 
-    def __init__(self, node):
-        Device_Base.__init__(self,node)
+    def __init__(self, parent, device_info):
+        Device_Base.__init__(self,parent, device_info)
 
-        property_node = node.find('property')
+        self.add_property('onoff')
+        self.add_property('paddle_action')
         
-        if 'value' in property_node.attrib:
+        if device_info.property_value:
             try:
-                self.onoff = int(property_node.attrib['value']) > 0
+                if int(device_info.property_value) > 0:
+                    self.set_property('onoff','on')
+                else:
+                    self.set_property('onoff','off')
             except:
-                self.onoff = None
+                pass
 
-    @property
-    def onoff(self):
-        return self._onoff #True = on
+    def process_websocket_event(self,event):
+            if event.control == 'ST':
+                if int(event.action) > 0:
+                    self.set_property('onoff','on')
+                else:
+                    self.set_property('onoff','off')
 
-    @onoff.setter
-    def onoff(self,onoff):
-        print ('set onoff',onoff)
-        self._onoff = onoff
+            elif event.control in paddle_events: #need to add other events
+                self.set_property('paddle_action',event.control)
+
+    def turn_on(self):
+        path = ('nodes/' + self.address + '/cmd/DON')
+        return self.send_request(path)
+
+    def turn_off(self):
+        path = ('nodes/' + self.address + '/cmd/DOF')
+        return self.send_request(path)

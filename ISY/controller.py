@@ -1,10 +1,12 @@
 #! /usr/bin/env python
 
-from connection import Connection
 import xml.etree.ElementTree as ET
-
+import time
 
 from devices.device_manager import Device_Manager 
+from connection import Connection
+from websocket_client import Websocket_Client
+
 
 
 class Controller(object):
@@ -17,44 +19,36 @@ class Controller(object):
 
         self.start()
 
+        self.websocket_client = Websocket_Client(self,address,port,username,password,False)
+
     def start(self):
-        response = self.get_nodes()
-        root = ET.fromstring (response.content)
-        self.process_nodes(root)
+        self.add_devices()
 
-    def get_nodes(self):
-        response = self._connection.request('nodes')
-        return response
+    def add_devices(self):
+        response = self.send_request('nodes/devices')
 
-    def process_nodes(self,root):
-       
-        #ET.dump(root)
-        #for child in root:
-            #print(child.tag, child.attrib)
-        #config = root.find('deviceSpecs/model')
-        #ET.dump(config)
-        #model = config.find('model')
-        #ET.dump(model)    	
-        # 
+        if response.status_code == 200:
+            root = ET.fromstring (response.content)        
+            self.device_manager.process_device_nodes (root)       
+
+    def device_event(self,device,event,*args):
+        print ('Device event from {}, address {}, event {} args {}'.format (device.name,device.address,event,args))      
+            
+    def send_request(self,path,query=None): 
+        return self._connection.request(path,query)
+
+    def websocket_connected(self,connected): #True websocket connected, False, no connection
+        pass #TBD
+
+    def websocket_event(self,event): #process websocket event
+
+        if event.address is not None: #event from a device/node
+            self.device_manager.websocket_event (event)
+
+        if event.control == '_0': # heartbeat
+            pass
+
         
-        deviceList = []      
-        for device in root.iter('node'):
-            deviceDict = self.process_node(device)
-            if deviceDict != None:
-                deviceList.append(deviceDict)
-
-    def process_node(self,node):
-
-        self.device_manager.process_node(node)
-        #ET.dump(node)
-		#address = self.extractFromXML(node, 'address')
-		#type = self.extractFromXML(node, 'type').split('.')
-        # type is a 4-digit dotted code like 113.1.2.0.  The first # (called categoryID here) is a broad class
-        # and the second number is a node type within this.  The third is version and the fourth is zero. 
-        # from API manual: node category.node subcategory.version.reserved
-		#categoryID = type[0]
-		#subcategoryID = type[1]
-
 
 
 
@@ -66,6 +60,17 @@ url = '192.168.1.213'
 
 if __name__ == "__main__":
 
-    c = Controller(url,username='admin',password='admin')
+    try:
+        c = Controller(url,username='admin',password='admin')
+        time.sleep(2)
+        device = c.device_manager.get_device('42 C8 99 1')
+        print ('got device',device)
 
+        while True:
+            time.sleep(2)
+            device.set_level (0)
+            time.sleep(2)
+            device.set_level (100)
 
+    except KeyboardInterrupt:
+        print("KeyboardInterrupt has been caught.")
