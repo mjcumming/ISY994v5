@@ -20,6 +20,8 @@ class ISY_Event(object):
         self.action = action.text 
         self.event_info = event_info.text 
 
+        self.event_info_node = event_info #store as consumers need to use it
+
     def __repr__(self):
         return 'Event: Address {}, Control {}, Action {}, Event Info {}'.format(self.address,self.control,self.action,self.event_info)
     

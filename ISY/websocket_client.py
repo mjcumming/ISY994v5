@@ -67,13 +67,18 @@ class Websocket_Client(object):
         logger.info('Websocket Message: {}'.format(message))
         print('Websocket Message: {}'.format(message))
 
-        event_node = ET.fromstring (message)        
-        
-        if event_node.tag == 'Event':
-            event = ISY_Event(event_node)
+        try:
+            event_node = ET.fromstring (message)        
+            
+            if event_node.tag == 'Event':
+                event = ISY_Event(event_node)
 
-            if self.controller:
-                self.controller.websocket_event(event)
+                if self.controller:
+                    self.controller.websocket_event(event)
+        
+        except Exception as ex:
+            print ('on message error{}'.format(ex))
+            logger.error('Websocket On Message Error {}'.format(ex))
 
     def _on_error(self,ws, error):
         logger.error('Error: {}'.format(error))

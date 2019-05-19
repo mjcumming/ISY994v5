@@ -33,7 +33,7 @@ class Connection(object):
         url = self.compile_request(path,query)
 
         try:
-            print (url)
+            #print (url)
             response = self._session.get (url)
         
         except requests.ConnectionError as err:

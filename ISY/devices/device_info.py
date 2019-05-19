@@ -4,9 +4,42 @@ import xml.etree.ElementTree as ET
 
 # process a node and assemble the info to build a device
 
+
+''' zwave node....
+<nodeInfo>
+<node flag="0">
+<address>ZW002_143</address>
+<name>ZW 002 Energy Meter</name>
+<family>4</family>
+<type>4.33.1.0</type>
+<enabled>true</enabled>
+<deviceClass>0</deviceClass>
+<wattage>0</wattage>
+<dcPeriod>0</dcPeriod>
+<startDelay>0</startDelay>
+<endDelay>0</endDelay>
+<pnode>ZW002_1</pnode>
+<sgid>143</sgid>
+<devtype>
+<gen>4.33.1</gen>
+<mfg>134.2.9</mfg>
+<cat>143</cat>
+</devtype>
+<ELK_ID>I16</ELK_ID>
+<property id="ST" value="91289" formatted="912.89 Watts" uom="73" prec="2"/>
+</node>
+<properties>
+<property id="ST" value="91289" formatted="912.89 Watts" uom="73" prec="2"/>
+<property id="TPW" value="31765" formatted="317.65 kWh" uom="33" prec="2"/>
+</properties>
+</nodeInfo>
+'''
+
 class Device_Info(object):
 
     def __init__(self,node):
+
+        self.node = node
 
         self.valid = False
 

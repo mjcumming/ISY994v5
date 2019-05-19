@@ -21,6 +21,17 @@ class Device_Manager (object):
 
         self.device_list = {} # indexed by device(node) address
 
+    def start(self):
+        response = self.controller.send_request('nodes/devices')
+
+        if response.status_code == 200:
+            root = ET.fromstring (response.content)        
+            self.process_device_nodes (root)    
+
+            return True
+        else:
+            return False
+
     def process_device_nodes(self,root):
         for device in root.iter('node'):
             self.process_device_node(device)
@@ -30,6 +41,19 @@ class Device_Manager (object):
 
         if device_info.valid: # make sure we have the info we need
 
+            ''' device family
+            	0 = Default (core driver implementation e.g. Insteon, UPB)
+				1 = Insteon products
+				2 = UPB Products
+				3 = RCS Products
+				4 = ZWave products
+				5 = Auto DR (for groups)
+				6 = Generic (for groups)
+				7 = UDI Products
+				8 = Brultech Products
+				9 = NCD Products
+            '''
+            
             if device_info.family == '1': #insteon devices
                 #override device cat for keypadlinc dimmer buttons and change to switch type devices
                 if device_info.category == '1' and device_info.address_parts [3] != '1': # maybe use node flag

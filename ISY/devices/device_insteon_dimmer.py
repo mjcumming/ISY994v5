@@ -13,7 +13,7 @@ class Device_Insteon_Dimmer(Device_Base):
     def __init__(self, parent, device_info):
         Device_Base.__init__(self,parent, device_info)
 
-        self.add_property('level') #in percent
+        self.add_property('level',0) #in percent
         self.add_property('paddle_action')
         
         

@@ -17,7 +17,7 @@ class Device_Base(object):
     def __init__(self, parent, device_info):
         self.parent = parent
 
-        self.properties = {'state' : None} # list of properties key = property name, value = property value
+        self.properties = {'status' : None} # list of properties key = property name, value = property value
 
         self.family = device_info.family
         self.category = device_info.category
@@ -42,19 +42,22 @@ class Device_Base(object):
     def flag(self,flag):
         self._flag = flag
         if flag & 16:
-            self.set_property ('state','alert')
+            self.set_property ('status','alert')
         else:
-            self.set_property ('state','ready')
+            self.set_property ('status','ready')
         
     def process_websocket_event(self,event):
         pass # classes to override
 
-    def add_property(self, property_):
-        self.properties [property_] = None
+    def add_property(self, property_, value = None):
+        self.properties [property_] = value
 
     def set_property(self, property_, value):
         self.properties [property_] = value
         self.parent.device_property_change(self,property_,value) 
  
+    def get_property(self, property_):
+        return self.properties [property_] 
+
     def send_request(self,path,query=None): 
         return self.parent.send_request(path,query)

@@ -10,7 +10,7 @@ class Device_Insteon_Switch(Device_Base):
     def __init__(self, parent, device_info):
         Device_Base.__init__(self,parent, device_info)
 
-        self.add_property('onoff')
+        self.add_property('onoff','off')
         self.add_property('paddle_action')
         
         if device_info.property_value:
