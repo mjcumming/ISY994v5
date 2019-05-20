@@ -1,6 +1,8 @@
 #! /usr/bin/env python
 
 import xml.etree.ElementTree as ET
+import logging
+logger = logging.getLogger(__name__)
 
 from .device_info import Device_Info
 
@@ -37,10 +39,9 @@ class Device_Manager (object):
             self.process_device_node(device)
                 
     def process_device_node(self,node):
-        device_info = Device_Info(node)
+        device_info = Device_Info(node) # parse node XML
 
         if device_info.valid: # make sure we have the info we need
-
             ''' device family
             	0 = Default (core driver implementation e.g. Insteon, UPB)
 				1 = Insteon products
@@ -66,8 +67,8 @@ class Device_Manager (object):
                     device = device_class(self,device_info)
                     self.add_device(device)
          
-    def send_request(self,path,query=None): 
-        return self.controller.send_request(path,query)
+    def send_request(self,path,query=None,timeout=None): 
+        return self.controller.send_request(path,query,timeout)
 
     def websocket_event(self,event):
         print('Device event',event)
@@ -86,10 +87,10 @@ class Device_Manager (object):
     def get_device(self,address):
         return self.device_list [address]
 
-    def device_property_change(self,device,property_,value):
+    def device_property_change(self,device,property_,value): # called by the device to publish a change
         self.device_event(device,'property',property_,value)
     
-    def device_event(self,device,event,*args):
+    def device_event(self,device,event,*args): #publish event
         self.controller.device_event (device,event,args)
     
     

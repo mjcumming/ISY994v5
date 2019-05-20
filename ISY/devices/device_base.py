@@ -59,5 +59,5 @@ class Device_Base(object):
     def get_property(self, property_):
         return self.properties [property_] 
 
-    def send_request(self,path,query=None): 
-        return self.parent.send_request(path,query)
+    def send_request(self,path,query=None,timeout=None): 
+        return self.parent.send_request(path,query,timeout)

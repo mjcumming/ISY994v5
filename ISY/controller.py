@@ -2,25 +2,39 @@
 
 import xml.etree.ElementTree as ET
 import time
+import datetime
 
 from devices.device_manager import Device_Manager 
 from scenes.scene_manager import Scene_Manager 
 from variables.variable_manager import Variable_Manager 
+from programs.program_manager import Program_Manager 
 
-from connection import Connection
-from websocket_client import Websocket_Client
+from network.http_client import HTTP_Client
+from network.websocket_client import Websocket_Client
+from network.discover import Discover
 
 
 
 class Controller(object):
 
-    def __init__(self,address,port=None,username='',password='',use_https=False):
+    def __init__(self,address=None,port=None,username='admin',password='admin',use_https=False):
+        if address == None:
+            discover = Discover()
+            controller_list = discover.start()
+            if len(controller_list) > 0:
+                address = controller_list[0]
 
-        self._connection = Connection (address,port,username,password,use_https)
+        if address is None:
+            print('no controller found')
+
+        self.http_client = HTTP_Client (address,port,username,password,use_https)
 
         self.device_manager = Device_Manager(self)
         self.scene_manager = Scene_Manager(self)
         self.variable_manager = Variable_Manager(self)
+        self.program_manager = Program_Manager(self)
+
+        last_heartbeat = None
 
         self.start()
 
@@ -30,6 +44,7 @@ class Controller(object):
         self.device_manager.start() # need to check for result
         self.scene_manager.start() # need to check for result
         self.variable_manager.start() # need to check for result
+        self.program_manager.start() # need to check for result
 
     def device_event(self,device,event,*args):
         print ('Device event from {}, address {}, event {} args {}'.format (device.name,device.address,event,args))   
@@ -41,13 +56,17 @@ class Controller(object):
     def variable_event(self,variable,event,*args):
         print ('Variable event from {}, index {}, event {} args {}'.format (variable.name,variable.get_index(),event,args))      
             
-    def send_request(self,path,query=None): 
-        return self._connection.request(path,query)
+    def program_event(self,program,event,*args):
+        print ('Program event from {}, id {}, event {} args {}'.format (program.name,program.id,event,args))      
+            
+    def send_request(self,path,query=None,timeout=None): 
+        return self.http_client.request(path,query,timeout)
 
     def websocket_connected(self,connected): #True websocket connected, False, no connection
         pass #TBD
 
     def websocket_event(self,event): #process websocket event
+        #print ('WS Event {}'.format(event))
 
         if event.address is not None: #event from a device/node
             self.device_manager.websocket_event (event)
@@ -56,20 +75,22 @@ class Controller(object):
             pass
 
         elif event.control == '_1': # trigger
-            if event.action == '6': # variable change
+            if event.action == '0': #program
+                self.program_manager.websocket_event (event)
+            elif event.action == '6': # variable change
                 self.variable_manager.websocket_event (event)
 
         elif event.control == '_5': # system status
             pass
 
-        
+    def process_heartbeat(self,event):
+        self.last_heartbeat = datetime.datetime.now()
 
 
 
 
 
-
-url = '192.168.1.213'
+url = None#'192.168.1.213'
 
 
 if __name__ == "__main__":
@@ -80,16 +101,20 @@ if __name__ == "__main__":
         #device = c.device_manager.get_device('42 C8 99 1')
         #print ('got device',device)
 
-        scene = c.scene_manager.get_scene('25770')
-        print ('got scene',scene)
+        #scene = c.scene_manager.get_scene('25770')
+        #print ('got scene',scene)
+
+        #program = c.program_manager.get_program ('0022')
 
         while True:
             time.sleep(2)
             #device.set_level (0)
             #scene.turn_on()
+            #program.run()
             time.sleep(2)
             #scene.turn_off()
             #device.set_level (100)
+            #program.run_else()
 
     except KeyboardInterrupt:
         print("KeyboardInterrupt has been caught.")

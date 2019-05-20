@@ -3,7 +3,6 @@
 import xml.etree.ElementTree as ET
 
 from .scene_info import Scene_Info
-
 from .scene_insteon import Scene_Insteon
 
 scene_classes = {
@@ -47,15 +46,14 @@ class Scene_Manager (object):
     def send_request(self,path,query=None): 
         return self.controller.send_request(path,query)
 
-    def websocket_event(self,event):
-        print('Scene event',event)
-        scene = self.get_scene(event.address)
-        scene.process_websocket_event(event)
+    def websocket_event(self,event): # no events for scenes
+        #print('Scene event',event)
+        pass
 
     def add_scene(self,scene):
         self.scene_list [scene.address] = scene
         self.scene_event (scene,'add')
-        print('scene',scene)
+        #print('scene',scene)
 
     def remove_scene(self,address):
         scene = self.scene_list [address]

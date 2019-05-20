@@ -10,7 +10,7 @@ import time
 
 import xml.etree.ElementTree as ET
 
-from isy_event import ISY_Event
+from .websocket_event import Websocket_Event
 
 logger = logging.getLogger(__name__)
 
@@ -65,19 +65,19 @@ class Websocket_Client(object):
 
     def _on_message(self,ws, message):
         logger.info('Websocket Message: {}'.format(message))
-        print('Websocket Message: {}'.format(message))
+        #print('Websocket Message: {}'.format(message))
 
         try:
             event_node = ET.fromstring (message)        
             
             if event_node.tag == 'Event':
-                event = ISY_Event(event_node)
+                event = Websocket_Event(event_node)
 
-                if self.controller:
-                    self.controller.websocket_event(event)
+                if event.valid:
+                    if self.controller:
+                        self.controller.websocket_event(event)
         
         except Exception as ex:
-            print ('on message error{}'.format(ex))
             logger.error('Websocket On Message Error {}'.format(ex))
 
     def _on_error(self,ws, error):

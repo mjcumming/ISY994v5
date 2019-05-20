@@ -48,8 +48,8 @@ class Scene_Base(object):
         self.properties [property_] = value
         self.parent.scene_property_change(self,property_,value) 
  
-    def send_request(self,path,query=None): 
-        return self.parent.send_request(path,query)
+    def send_request(self,path,query=None,timeout=None): 
+        return self.parent.send_request(path,query,timeout)
 
     def device_event(self,device): #device event, process and see if we are interested
         pass # subclasses to provide
