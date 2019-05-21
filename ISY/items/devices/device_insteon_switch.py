@@ -1,18 +1,19 @@
 #! /usr/bin/env python
 
 
-from .device_base import Device_Base
+from .device_switch import Device_Switch
+from .device_insteon_base import Device_Insteon_Base
 
 paddle_events = {'DON','DOFF','DIM','BRT','DFON','DFOF'}
 
-class Device_Insteon_Switch(Device_Base):
+class Device_Insteon_Switch(Device_Switch,Device_Insteon_Base):
 
-    def __init__(self, parent, device_info):
-        Device_Base.__init__(self,parent, device_info)
+    def __init__(self, container, device_info):
+        Device_Dimmer.__init__(self,container)
+        Device_Insteon_Base.__init__(self,device_info)
 
-        self.add_property('onoff','off')
         self.add_property('paddle_action')
-        
+
         if device_info.property_value:
             try:
                 if int(device_info.property_value) > 0:

@@ -19,8 +19,8 @@ Base Program
 
 class Program_Base(object):
 
-    def __init__(self, parent, program_info):
-        self.parent = parent
+    def __init__(self, container, program_info):
+        self.container = container
 
         self.properties = {'status' : 'ready','state' : 'idle'} # list of properties key = property name, value = property value
 
@@ -50,13 +50,13 @@ class Program_Base(object):
 
     def set_property(self, property_, value):
         self.properties [property_] = value
-        self.parent.program_property_change(self,property_,value) 
+        self.container.program_property_change(self,property_,value) 
  
     def get_property(self, property_):
         return self.properties [property_] 
 
     def send_request(self,path,query=None,timeout=None): 
-        return self.parent.send_request(path,query,timeout)
+        return self.container.send_request(path,query,timeout)
 
     def command(self,command):
         path = 'programs/' + self.id + '/' + command

@@ -14,8 +14,8 @@ Common to all elements returned from rest/nodes/variables
 
 class Variable_Base(object):
 
-    def __init__(self, parent, variable_info): 
-        self.parent = parent
+    def __init__(self, container, variable_info): 
+        self.container = container
 
         self.properties = {'status' : 'ready'} # list of properties key = property name, value = property value
             
@@ -46,13 +46,13 @@ class Variable_Base(object):
 
     def set_property(self, property_, value):
         self.properties [property_] = value
-        self.parent.variable_property_change(self,property_,value) 
+        self.container.variable_property_change(self,property_,value) 
  
     def get_property(self, property_):
         return self.properties [property_]
  
     def send_request(self,path,query=None,timeout=None): 
-        return self.parent.send_request(path,query,timeout)
+        return self.container.send_request(path,query,timeout)
 
     def device_event(self,device): #device event, process and see if we are interested
         pass # subclasses to provide

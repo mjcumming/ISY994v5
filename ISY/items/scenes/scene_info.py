@@ -25,12 +25,12 @@ class Scene_Info(object):
             if self.flag == '12': # all scene
                 return 
 
-            parent = group.find('parent') 
-            if parent is None:# adr scene
+            container = group.find('container') 
+            if container is None:# adr scene
                 return 
 
-            self.parent_node_address = parent.text
-            self.parent_type = parent.attrib['type']
+            self.container_node_address = container.text
+            self.container_type = container.attrib['type']
             
             self.primary_node = group.find('pnode').text 
             

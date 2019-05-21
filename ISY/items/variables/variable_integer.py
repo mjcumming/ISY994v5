@@ -1,0 +1,10 @@
+#! /usr/bin/env python
+
+
+from .variable_base import Variable_Base
+
+class Variable_Integer(Variable_Base):
+
+    def __init__(self, container, variable_info):
+        Variable_Base.__init__(self,container, variable_info)
+

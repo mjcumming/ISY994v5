@@ -6,7 +6,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 from .program_info import Program_Info
-
 from .program_base import Program_Base
 
 program_events = {'add','remove','property'}
@@ -67,11 +66,6 @@ class Program_Manager (object):
 
         except Exception as e: 
             print(e)
-
-
-
-        #program = self.get_program(event.id)
-        #program.process_websocket_event(event)
 
     def add_program(self,program):
         self.program_list [program.id] = program

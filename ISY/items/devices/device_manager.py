@@ -1,8 +1,8 @@
 #! /usr/bin/env python
 
 import xml.etree.ElementTree as ET
-import logging
-logger = logging.getLogger(__name__)
+
+from .. item_manager import Item_Manager
 
 from .device_info import Device_Info
 
@@ -14,14 +14,14 @@ insteon_device_classes = {
     '2' : Device_Insteon_Switch,
 }
 
-device_events = {'add','remove','property'}
+import logging
+logger = logging.getLogger(__name__)
 
-class Device_Manager (object):
+
+class Device_Manager (Item_Manager):
 
     def __init__(self, controller):
-        self.controller = controller
-
-        self.device_list = {} # indexed by device(node) address
+        Item_Manager.__init__(controller,'Device')
 
     def start(self):
         response = self.controller.send_request('nodes/devices')
@@ -65,7 +65,7 @@ class Device_Manager (object):
                     device_class = insteon_device_classes [device_info.category]
 
                     device = device_class(self,device_info)
-                    self.add_device(device)
+                    self.add(device,device.)
          
     def send_request(self,path,query=None,timeout=None): 
         return self.controller.send_request(path,query,timeout)

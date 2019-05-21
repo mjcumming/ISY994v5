@@ -5,8 +5,8 @@ from .scene_base import Scene_Base
 
 class Scene_Insteon(Scene_Base):
 
-    def __init__(self, parent, scene_info):
-        Scene_Base.__init__(self,parent, scene_info)
+    def __init__(self, container, scene_info):
+        Scene_Base.__init__(self,container, scene_info)
 
         self.add_property('state')
 
@@ -26,7 +26,7 @@ class Scene_Insteon(Scene_Base):
             if device.address in self.responders: # this scene has this device
                 scene_state = 'off'
                 for address in self.responders:
-                    device = self.parent.get_device(address)
+                    device = self.container.get_device(address)
                     if device is not None:
                         if device.category == '1': #insteon dimmer
                             if device.get_property ('level') > 0:

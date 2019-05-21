@@ -69,8 +69,8 @@ class Device_Info(object):
             types = type_.text.split('.')
             device_category = types [0]
 
-            parent_node = node.find('parent')
-            self.parent_node_address = parent_node.text  
+            container_node = node.find('container')
+            self.container_node_address = container_node.text  
         
             property_node = node.find('property')
             if 'value' in property_node.attrib:
