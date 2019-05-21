@@ -65,27 +65,12 @@ class Device_Manager (Item_Manager):
                     device_class = insteon_device_classes [device_info.category]
 
                     device = device_class(self,device_info)
-                    self.add(device,device.)
+                    self.add(device,device.address)
          
-    def send_request(self,path,query=None,timeout=None): 
-        return self.controller.send_request(path,query,timeout)
-
     def websocket_event(self,event):
         print('Device event',event)
         device = self.get_device(event.address)
         device.process_websocket_event(event)
-
-    def add_device(self,device):
-        self.device_list [device.address] = device
-        self.device_event (device,'add')
-
-    def remove_device(self,address):
-        device = self.device_list [address]
-        del self.device_list [address]
-        self.device_event (device,'remove')
-
-    def get_device(self,address):
-        return self.device_list [address]
 
     def device_property_change(self,device,property_,value): # called by the device to publish a change
         self.device_event(device,'property',property_,value)
