@@ -14,15 +14,14 @@ Base Program
 </eventInfo>
 
 '''
+from .. item_base import Item_Base
 
-
-
-class Program_Base(object):
+class Program_Base(Item_Base):
 
     def __init__(self, container, program_info):
-        self.container = container
+        Item_Base.__init__(self,container)
 
-        self.properties = {'status' : 'ready','state' : 'idle'} # list of properties key = property name, value = property value
+        self.add_property('state', 'idle') #program run state
 
         self.id = program_info.id
         self.name = program_info.name
@@ -44,19 +43,6 @@ class Program_Base(object):
         self.set_property('state',state)
         self.set_property('last_run_time',last_run_time)
         self.set_property('last_finish_time',last_finish_time)
-
-    def add_property(self, property_, value = None):
-        self.properties [property_] = value
-
-    def set_property(self, property_, value):
-        self.properties [property_] = value
-        self.container.program_property_change(self,property_,value) 
- 
-    def get_property(self, property_):
-        return self.properties [property_] 
-
-    def send_request(self,path,query=None,timeout=None): 
-        return self.container.send_request(path,query,timeout)
 
     def command(self,command):
         path = 'programs/' + self.id + '/' + command

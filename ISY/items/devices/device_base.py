@@ -10,12 +10,13 @@ device_type = switch,dimmer,contact
 
 '''
 
+
 from .. item_base import Item_Base
 
 
 class Device_Base(Item_Base):
 
-    def __init__(self, container, device_type, device_info):
+    def __init__(self, container, device_type):
         Item_Base.__init__(self,container)
 
         self.device_type = device_type

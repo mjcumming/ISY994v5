@@ -1,26 +1,24 @@
 #! /usr/bin/env python
-
 import xml.etree.ElementTree as ET
 
+from .. item_manager import Item_Manager
 from .variable_info import Variable_Info
 from .variable_name import Variable_Name
-
 from .variable_integer import Variable_Integer
 from .variable_state import Variable_State
+
+import logging
+logger = logging.getLogger(__name__)
 
 variable_classes = {
     '1' : Variable_Integer,
     '2' : Variable_State,
 }
 
-variable_events = {'add','remove','property'}
-
-class Variable_Manager (object):
+class Variable_Manager (Item_Manager):
 
     def __init__(self, controller):
-        self.controller = controller
-
-        self.variable_list = {} # indexed by variable type.id
+        Item_Manager.__init__(self,controller,'Variable')
 
     def start(self):
         success = True
@@ -60,11 +58,8 @@ class Variable_Manager (object):
                     if variable_name.valid and variable_name.id == variable.id:
                         variable.name = variable_name.name
 
-                self.add_variable(variable)
+                self.add(variable,variable.get_index())
          
-    def send_request(self,path,query=None): 
-        return self.controller.send_request(path,query)
-
     def websocket_event(self,event):
         var = event.event_info_node.find('var')
         variable_id = var.attrib ['id']
@@ -72,29 +67,6 @@ class Variable_Manager (object):
 
         index = variable_type+':'+variable_id
 
-        variable = self.get_variable(index)
+        variable = self.get(index)
         variable.process_websocket_event(event)
-
-    def add_variable(self,variable):
-        self.variable_list [variable.get_index()] = variable
-        self.variable_event (variable,'add')
-
-    def remove_variable(self,index):
-        variable = self.variable_list [index]
-        del self.variable_list [index]
-        self.variable_event (variable,'remove')
-
-    def get_variable(self,index):
-        return self.variable_list [index]
-
-    def variable_property_change(self,variable,property_,value):
-        self.variable_event(variable,'property',property_,value)
-    
-    def variable_event(self,variable,event,*args):
-        self.controller.variable_event (variable,event,args)
-
-    def get_device(self,index):
-        return self.controller.device_manager.get_device(index)
-    
-        
 

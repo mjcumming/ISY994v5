@@ -1,21 +1,21 @@
 #! /usr/bin/env python
 
+
 import xml.etree.ElementTree as ET
+
+from .. item_manager import Item_Manager
+from .program_info import Program_Info
+from .program_base import Program_Base
+
 
 import logging
 logger = logging.getLogger(__name__)
 
-from .program_info import Program_Info
-from .program_base import Program_Base
 
-program_events = {'add','remove','property'}
-
-class Program_Manager (object):
+class Program_Manager (Item_Manager):
 
     def __init__(self, controller):
-        self.controller = controller
-
-        self.program_list = {} # indexed by program(node) id
+        Item_Manager.__init__(self,controller,'Program')
 
     def start(self):
         response = self.controller.send_request('programs','subfolders=true')
@@ -37,11 +37,8 @@ class Program_Manager (object):
 
         if program_info.valid: # make sure we have the info we need
             program = Program_Base(self,program_info)
-            self.add_program(program)
+            self.add(program,program.id)
          
-    def send_request(self,path,query=None,timeout=None): 
-        return self.controller.send_request(path,query,timeout)
-
     def websocket_event(self,event):
         #print('Program event',event)
         try:
@@ -61,30 +58,11 @@ class Program_Manager (object):
                 finish_time = event.event_info_node.find('f').text 
 
             if status and run_time and finish_time:
-                program = self.get_program(id)
+                program = self.get(id)
                 program.process_websocket_event (status,run_time,finish_time)
 
         except Exception as e: 
             print(e)
 
-    def add_program(self,program):
-        self.program_list [program.id] = program
-        self.program_event (program,'add')
-
-    def remove_program(self,id):
-        program = self.program_list [id]
-        del self.program_list [id]
-        self.program_event (program,'remove')
-
-    def get_program(self,id):
-        return self.program_list [id]
-
-    def program_property_change(self,program,property_,value): # called by the program to publish a change
-        self.program_event(program,'property',property_,value)
-    
-    def program_event(self,program,event,*args): #publish event
-        self.controller.program_event (program,event,args)
-    
-    
         
 

@@ -9,7 +9,7 @@ paddle_events = {'DON','DOFF','DIM','BRT','DFON','DFOF'}
 class Device_Insteon_Switch(Device_Switch,Device_Insteon_Base):
 
     def __init__(self, container, device_info):
-        Device_Dimmer.__init__(self,container)
+        Device_Switch.__init__(self,container)
         Device_Insteon_Base.__init__(self,device_info)
 
         self.add_property('paddle_action')

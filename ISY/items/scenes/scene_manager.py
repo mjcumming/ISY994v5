@@ -1,34 +1,42 @@
 #! /usr/bin/env python
 
-import xml.etree.ElementTree as ET
 
+import xml.etree.ElementTree as ET
+import traceback
+
+from .. item_manager import Item_Manager
 from .scene_info import Scene_Info
 from .scene_insteon import Scene_Insteon
+
+import logging
+logger = logging.getLogger(__name__)
+
 
 scene_classes = {
     '6' : Scene_Insteon,
 }
 
-scene_events = {'add','remove','property'}
-
-class Scene_Manager (object):
+class Scene_Manager (Item_Manager):
 
     def __init__(self, controller):
-        self.controller = controller
-
-        self.scene_list = {} # indexed by scene(node) address
+        Item_Manager.__init__(self,controller,'Scene')
 
     def start(self):
         response = self.controller.send_request('nodes/scenes')
 
-        if response.status_code == 200:
-            root = ET.fromstring (response.content)        
-            self.process_scene_nodes (root)       
+        try:
+            if response.status_code == 200:
+                root = ET.fromstring (response.content)        
+                self.process_scene_nodes (root)       
 
-            return True
-        else:
-            return False
-            
+                return True
+            else:
+                return False
+
+        except Exception as ex:
+                logger.error('scene manager Error {}'.format(ex))
+                traceback.print_exc()
+
     def process_scene_nodes(self,root):
         for scene in root.iter('group'):
             self.process_scene_node(scene)
@@ -37,38 +45,15 @@ class Scene_Manager (object):
         scene_info = Scene_Info(node)
 
         if scene_info.valid: # make sure we have the info we need
+            #print('process scene',scene_info)
             if scene_info.family in scene_classes:
                 scene_class = scene_classes [scene_info.family]
 
                 scene = scene_class(self,scene_info)
-                self.add_scene(scene)
+                self.add(scene,scene.id)
+        else:
+            logger.info ('invalid scene info',scene_info.name)
          
-    def send_request(self,path,query=None): 
-        return self.controller.send_request(path,query)
-
-    def websocket_event(self,event): # no events for scenes
-        #print('Scene event',event)
-        pass
-
-    def add_scene(self,scene):
-        self.scene_list [scene.address] = scene
-        self.scene_event (scene,'add')
-        #print('scene',scene)
-
-    def remove_scene(self,address):
-        scene = self.scene_list [address]
-        del self.scene_list [address]
-        self.scene_event (scene,'remove')
-
-    def get_scene(self,address):
-        return self.scene_list [address]
-
-    def scene_property_change(self,scene,property_,value):
-        self.scene_event(scene,'property',property_,value)
-    
-    def scene_event(self,scene,event,*args):
-        self.controller.scene_event (scene,event,args)
-    
     def device_event(self,device): # notification from controller about a device event, used to "track" scene state
         for address,scene in self.scene_list.items():
             scene.device_event (device)

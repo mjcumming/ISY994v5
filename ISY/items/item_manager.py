@@ -45,8 +45,9 @@ class Item_Manager (object):
     def property_change(self,item,property_,value): # called by the item to publish a change
         self.event(item,'property',property_,value)
     
-    #def event(self,item,event,*args): #publish event
-     #   self.controller.item_event (self.catedevice,event,args)
+    def event(self,item,event,*args): #publish event to controller
+        print ('item event',self.category,item.name,event)
+        #self.controller.item_event (self.category,item,event,args)
     
     
         

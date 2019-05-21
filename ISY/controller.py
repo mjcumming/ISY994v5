@@ -2,6 +2,7 @@
 
 import time
 import datetime
+import traceback
 
 from items.devices.device_manager import Device_Manager 
 from items.scenes.scene_manager import Scene_Manager 
@@ -48,10 +49,12 @@ class Controller(object):
         self.websocket_client = Websocket_Client(self,address,port,username,password,False)
 
     def start(self):
-        self.device_manager.start() # need to check for result
+        print (1)
+        #self.device_manager.start() # need to check for result
         self.scene_manager.start() # need to check for result
-        self.variable_manager.start() # need to check for result
-        self.program_manager.start() # need to check for result
+        print (2)
+        #self.variable_manager.start() # need to check for result
+        #self.program_manager.start() # need to check for result
 
     def device_event(self,device,event,*args):
         print ('Device event from {}, address {}, event {} args {}'.format (device.name,device.address,event,args))   
@@ -85,21 +88,27 @@ class Controller(object):
 
     def websocket_event(self,event): #process websocket event
         #print ('WS Event {}'.format(event))
+        try:
 
-        if event.address is not None: #event from a device/node
-            self.device_manager.websocket_event (event)
+            if event.address is not None: #event from a device/node
+                self.device_manager.websocket_event (event)
 
-        if event.control == '_0': # heartbeat
-            self.process_heartbeat(event)
+            if event.control == '_0': # heartbeat
+                self.process_heartbeat(event)
 
-        elif event.control == '_1': # trigger
-            if event.action == '0': #program
-                self.program_manager.websocket_event (event)
-            elif event.action == '6': # variable change
-                self.variable_manager.websocket_event (event)
+            elif event.control == '_1': # trigger
+                if event.action == '0': #program
+                    self.program_manager.websocket_event (event)
+                elif event.action == '6': # variable change
+                    self.variable_manager.websocket_event (event)
 
-        elif event.control == '_5': # system status
-            self.process_system_status(event)
+            elif event.control == '_5': # system status
+                self.process_system_status(event)
+
+        except Exception as ex:
+                logger.error('websocket handler Error {}'.format(ex))
+                traceback.print_exc()
+                quit()
 
     def process_heartbeat(self,event):
         self.last_heartbeat = datetime.datetime.now()

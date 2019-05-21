@@ -2,6 +2,8 @@
 
 import xml.etree.ElementTree as ET
 
+import traceback
+
 # process a node and assemble the info to build a device
 
 
@@ -69,8 +71,8 @@ class Device_Info(object):
             types = type_.text.split('.')
             device_category = types [0]
 
-            container_node = node.find('container')
-            self.container_node_address = container_node.text  
+            #container_node = node.find('container')
+            #self.container_node_address = container_node.text  
         
             property_node = node.find('property')
             if 'value' in property_node.attrib:
@@ -79,8 +81,9 @@ class Device_Info(object):
                 self.property_value = None
 
             self.valid = True
-        except:
-            pass
+        
+        except Exception as ex:
+                traceback.print_exc()       
 
     def __repr__(self):
         return 'Device: Name {} Address {}, Family {}, Type {}'.format(self.name,self.address,self.family,self.type)

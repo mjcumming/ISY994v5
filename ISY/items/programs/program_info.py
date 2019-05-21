@@ -29,5 +29,5 @@ class Program_Info(object):
             pass
 
     def __repr__(self):
-        return 'Program: Name {} Address {}, Family {}, Type {}'.format(self.name,self.address,self.family,self.type)
+        return 'Program: Name {} ID {}'.format(self.name,self.id)
     

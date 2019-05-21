@@ -1,5 +1,7 @@
 #! /usr/bin/env python
 
+import traceback
+
 # process a node and assemble the info to build a scene, 
 # currently only processes scenes with a flag of 132
 
@@ -24,14 +26,7 @@ class Scene_Info(object):
 
             if self.flag == '12': # all scene
                 return 
-
-            container = group.find('container') 
-            if container is None:# adr scene
-                return 
-
-            self.container_node_address = container.text
-            self.container_type = container.attrib['type']
-            
+           
             self.primary_node = group.find('pnode').text 
             
             self.device_group = group.find('deviceGroup').text
@@ -49,8 +44,9 @@ class Scene_Info(object):
 
             self.valid = True
 
-        except:
-            pass
+        except Exception as ex:
+                print ('scene info error',ex)
+                traceback.print_exc()               
 
     def __repr__(self):
         return 'Scene: Name {} Address {}, Family {}, Flag {}, Controllers {}, Responders {}'.format(self.name,self.address,self.family,self.flag,self.controllers,self.responders)

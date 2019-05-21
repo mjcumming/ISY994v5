@@ -16,7 +16,7 @@ class Device_Insteon_Dimmer(Device_Dimmer,Device_Insteon_Base):
         
         if device_info.property_value:        
             try:
-                self.level = int(int(device_info.property_value)/255*100)
+                self.properties ['level'] = int(int(device_info.property_value)/255*100)
             except:
                 pass
 
