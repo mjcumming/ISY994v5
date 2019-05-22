@@ -22,5 +22,5 @@ class Variable_Info(object):
             pass
 
     def __repr__(self):
-        return 'Variable: ID {} Value {}, Init {}, Time {}'.format(self.id,self.value,self.init,self.time_set)
+        return 'Variable: ID {} Value {}, Init {}, Time {}'.format(self.id,self.value,self.init_value,self.time_set)
     

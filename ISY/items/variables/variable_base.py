@@ -10,15 +10,14 @@ Common to all elements returned from rest/nodes/variables
 
 '''
 
+from .. item_base import Item_Base
 
 
-class Variable_Base(object):
+class Variable_Base(Item_Base):
 
     def __init__(self, container, variable_info): 
-        self.container = container
+        Item_Base.__init__(self,container)
 
-        self.properties = {'status' : 'ready'} # list of properties key = property name, value = property value
-            
         self.id = variable_info.id
         self.type = variable_info.type
         self.name = self.id # replaced once names are retrieved
@@ -40,19 +39,3 @@ class Variable_Base(object):
 
         self.set_property ('value',value)
         self.set_property ('time_set',time_set)
-
-    def add_property(self, property_,value = None):
-        self.properties [property_] = value
-
-    def set_property(self, property_, value):
-        self.properties [property_] = value
-        self.container.variable_property_change(self,property_,value) 
- 
-    def get_property(self, property_):
-        return self.properties [property_]
- 
-    def send_request(self,path,query=None,timeout=None): 
-        return self.container.send_request(path,query,timeout)
-
-    def device_event(self,device): #device event, process and see if we are interested
-        pass # subclasses to provide

@@ -43,7 +43,10 @@ class Item_Container (object):
         self.event (item,'remove')
 
     def get(self,key):
-        return self.list [key]
+        if key in self.list:
+            return self.list [key]
+        else:
+            return None
 
     def property_change(self,item,property_,value): # called by the item to publish a change
         self.event(item,'property',property_,value)

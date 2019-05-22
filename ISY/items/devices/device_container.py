@@ -75,7 +75,8 @@ class Device_Container (Item_Container):
     def websocket_event(self,event):
         #print('Device event',event)
         device = self.get(event.address)
-        device.process_websocket_event(event)
+        if device is not None:
+            device.process_websocket_event(event)
 
     
     
