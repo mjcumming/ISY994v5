@@ -4,10 +4,11 @@ import time
 import datetime
 import traceback
 
-from items.devices.device_manager import Device_Manager 
-from items.scenes.scene_manager import Scene_Manager 
-from items.variables.variable_manager import Variable_Manager 
-from items.programs.program_manager import Program_Manager 
+from items.devices.device_container import Device_Container 
+from items.scenes.scene_container import Scene_Container 
+from items.variables.variable_container import Variable_Container 
+from items.programs.program_container import Program_Container 
+from items.controller.controller_container import Controller_Container 
 
 from network.http_client import HTTP_Client
 from network.websocket_client import Websocket_Client
@@ -37,10 +38,11 @@ class Controller(object):
 
         self.http_client = HTTP_Client (address,port,username,password,use_https)
 
-        self.device_manager = Device_Manager(self)
-        self.scene_manager = Scene_Manager(self)
-        self.variable_manager = Variable_Manager(self)
-        self.program_manager = Program_Manager(self)
+        self.controller_container = Controller_Container(self)
+        self.device_container = Device_Container(self)
+        self.scene_container = Scene_Container(self)
+        self.variable_container = Variable_Container(self)
+        self.program_container = Program_Container(self)
 
         self.last_heartbeat = None
 
@@ -49,39 +51,43 @@ class Controller(object):
         self.websocket_client = Websocket_Client(self,address,port,username,password,False)
 
     def start(self):
-        print (1)
-        #self.device_manager.start() # need to check for result
-        self.scene_manager.start() # need to check for result
-        print (2)
-        #self.variable_manager.start() # need to check for result
-        #self.program_manager.start() # need to check for result
+        self.controller_container.start()
 
-    def device_event(self,device,event,*args):
-        print ('Device event from {}, address {}, event {} args {}'.format (device.name,device.address,event,args))   
-        self.publish_event ('device',device,event,args)
-        self.scene_manager.device_event (device)   #used to determine "state" of a scene
-            
-    def scene_event(self,scene,event,*args):
-        self.publish_event ('scene',scene,event,args)
-        print ('Scene event from {}, address {}, event {} args {}'.format (scene.name,scene.address,event,args))      
-            
-    def variable_event(self,variable,event,*args):
-        self.publish_event ('variable',variable,event,args)
-        print ('Variable event from {}, index {}, event {} args {}'.format (variable.name,variable.get_index(),event,args))      
-            
-    def program_event(self,program,event,*args):
-        self.publish_event ('program',program,event,args)
-        print ('Program event from {}, id {}, event {} args {}'.format (program.name,program.id,event,args))      
+        self.device_container.start()
+        if self.device_container.items_retrieved is False:
+            self.process_controller_event('status','error')
+            return False
+        self.scene_container.start() # need to check for result
+        if self.scene_container.items_retrieved is False:
+            self.process_controller_event('status','error')
+            return False       
+        self.variable_container.start() # need to check for result
+        if self.variable_container.items_retrieved is False:
+            self.process_controller_event('status','error')
+            return False 
+        self.program_container.start() # need to check for result
+        if self.program_container.items_retrieved is False:
+            self.process_controller_event('status','error')
+            return False
+        
+        self.process_controller_event('status','ready')
 
-    def publish_event(self,category,item,event,*args):
+        return True
+        
+    def container_event(self,container,item,event,*args):
+        print ('Event {} from {}: {} {}'.format(item.name,container.container_type,item,args))
+        self.publish_container_event(container,item,event,*args)
+
+    def publish_container_event(self,container,item,event,*args):
         for event_handler in self.event_handlers:
             try:
-                event_handler (category,item,event,args)
+                event_handler (container,item,event,args)
             except Exception as ex:
                 logger.error('Event handler Error {}'.format(ex))
             
     def send_request(self,path,query=None,timeout=None): 
-        return self.http_client.request(path,query,timeout)
+        success,response = self.http_client.request(path,query,timeout)
+        return success, response
 
     def websocket_connected(self,connected): #True websocket connected, False, no connection
         pass #TBD
@@ -91,16 +97,16 @@ class Controller(object):
         try:
 
             if event.address is not None: #event from a device/node
-                self.device_manager.websocket_event (event)
+                self.device_container.websocket_event (event)
 
             if event.control == '_0': # heartbeat
                 self.process_heartbeat(event)
 
             elif event.control == '_1': # trigger
                 if event.action == '0': #program
-                    self.program_manager.websocket_event (event)
+                    self.program_container.websocket_event (event)
                 elif event.action == '6': # variable change
-                    self.variable_manager.websocket_event (event)
+                    self.variable_container.websocket_event (event)
 
             elif event.control == '_5': # system status
                 self.process_system_status(event)
@@ -108,16 +114,20 @@ class Controller(object):
         except Exception as ex:
                 logger.error('websocket handler Error {}'.format(ex))
                 traceback.print_exc()
-                quit()
+
+    def process_controller_event(self,property_,value):
+        controller = self.controller_container.get('controller')
+        controller.set_property(property_,value)
 
     def process_heartbeat(self,event):
         self.last_heartbeat = datetime.datetime.now()
+        self.process_controller_event('heartbeat',self.last_heartbeat)
 
     def process_system_status(self,event):
         if event.action =='0': #idle
-            pass
+            self.process_controller_event('state','idle')
         elif event.action == '1':#busy
-            pass 
+            self.process_controller_event('state','busy')
 
 
 
@@ -131,13 +141,13 @@ if __name__ == "__main__":
     try:
         c = Controller(url,username='admin',password='admin')
         time.sleep(2)
-        #device = c.device_manager.get_device('42 C8 99 1')
+        #device = c.device_Container.get_device('42 C8 99 1')
         #print ('got device',device)
 
-        #scene = c.scene_manager.get_scene('25770')
+        #scene = c.scene_Container.get_scene('25770')
         #print ('got scene',scene)
 
-        #program = c.program_manager.get_program ('0022')
+        #program = c.program_Container.get_program ('0022')
 
         while True:
             time.sleep(2)

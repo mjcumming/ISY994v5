@@ -3,7 +3,7 @@
 import xml.etree.ElementTree as ET
 import traceback
 
-from .. item_manager import Item_Manager
+from ..item_container import Item_Container
 
 from .device_info import Device_Info
 
@@ -19,24 +19,22 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class Device_Manager (Item_Manager):
+class Device_Container (Item_Container):
 
     def __init__(self, controller):
-        Item_Manager.__init__(self,controller,'Device')
+        Item_Container.__init__(self,controller,'Device')
 
     def start(self):
-        response = self.send_request('nodes/devices')
+        success,response = self.send_request('nodes/devices')
 
-        if response.status_code == 200:
+        if success and response.status_code == 200:
             try:
                 root = ET.fromstring (response.content)        
                 self.process_device_nodes (root)    
+                self.items_retrieved = True
             except Exception as ex:
-                    logger.error('websocket handler Error {}'.format(ex))
+                    logger.error('container error {}'.format(ex))
                     traceback.print_exc()
-            return True
-        else:
-            return False
 
     def process_device_nodes(self,root):
         for device in root.iter('node'):

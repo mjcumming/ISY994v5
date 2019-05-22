@@ -41,14 +41,17 @@ class HTTP_Client(object):
             logger.info('Request: {}'.format(url,timeout=timeout))
             response = self._session.get (url)
             response.raise_for_status()
+            return True,response
         
         except requests.exceptions.RequestException as err:
             logger.warn('Request Error: {}'.format(err))
+            return None,err
         except requests.exceptions.HTTPError as errh:
             logger.warn('Request HTTP Error: {}'.format(errh))
+            return None,errh
         except requests.exceptions.ConnectionError as errc:
             logger.warn('Request Connection Error: {}'.format(errc))
+            return None,errc
         except requests.exceptions.Timeout as errt:
             logger.warn('Request Timeout Error: {}'.format(errt))
-
-        return response
+            return None, errt

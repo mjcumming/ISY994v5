@@ -4,7 +4,7 @@
 import xml.etree.ElementTree as ET
 import traceback
 
-from .. item_manager import Item_Manager
+from .. item_container import Item_Container
 from .scene_info import Scene_Info
 from .scene_insteon import Scene_Insteon
 
@@ -16,26 +16,23 @@ scene_classes = {
     '6' : Scene_Insteon,
 }
 
-class Scene_Manager (Item_Manager):
+class Scene_Container (Item_Container):
 
     def __init__(self, controller):
-        Item_Manager.__init__(self,controller,'Scene')
+        Item_Container.__init__(self,controller,'Scene')
 
     def start(self):
-        response = self.controller.send_request('nodes/scenes')
+        success,response = self.controller.send_request('nodes/scenes')
 
         try:
-            if response.status_code == 200:
+            if success and response.status_code == 200:
                 root = ET.fromstring (response.content)        
                 self.process_scene_nodes (root)       
-
-                return True
-            else:
-                return False
+                self.items_retrieved = True
 
         except Exception as ex:
-                logger.error('scene manager Error {}'.format(ex))
-                traceback.print_exc()
+            logger.error('container manager Error {}'.format(ex))
+            traceback.print_exc()
 
     def process_scene_nodes(self,root):
         for scene in root.iter('group'):
@@ -52,14 +49,14 @@ class Scene_Manager (Item_Manager):
                 scene = scene_class(self,scene_info)
                 self.add(scene,scene.id)
         else:
-            logger.info ('invalid scene info',scene_info.name)
+            logger.info ('Invalid scene info {}'.format(scene_info.name))
          
     def device_event(self,device): # notification from controller about a device event, used to "track" scene state
-        for address,scene in self.scene_list.items():
+        for address,scene in self.list.items():
             scene.device_event (device)
 
     def get_device(self,address):
-        return self.controller.device_manager.get_device(address)
+        return self.controller.device_Container.get_device(address)
     
         
 

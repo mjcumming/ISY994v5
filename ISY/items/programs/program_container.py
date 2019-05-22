@@ -2,9 +2,10 @@
 
 
 import xml.etree.ElementTree as ET
+import traceback
 
-from .. item_manager import Item_Manager
-from .program_info import Program_Info
+from .. item_container import Item_Container
+from .program_info import Program_Info 
 from .program_base import Program_Base
 
 
@@ -12,21 +13,22 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class Program_Manager (Item_Manager):
+class Program_Container (Item_Container):
 
     def __init__(self, controller):
-        Item_Manager.__init__(self,controller,'Program')
+        Item_Container.__init__(self,controller,'Program')
 
     def start(self):
-        response = self.controller.send_request('programs','subfolders=true')
+        success,response = self.controller.send_request('programs','subfolders=true')
 
-        if response.status_code == 200:
-            root = ET.fromstring (response.content)        
-            self.process_program_nodes (root)    
-
-            return True
-        else:
-            return False
+        if success and response.status_code == 200:
+            try:
+                root = ET.fromstring (response.content)        
+                self.process_program_nodes (root)    
+                self.items_retrieved = True
+            except Exception as ex:
+                logger.error('container error {}'.format(ex))
+                traceback.print_exc()
 
     def process_program_nodes(self,root):
         for program in root.iter('program'):

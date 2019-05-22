@@ -29,7 +29,7 @@ class Program_Base(Item_Base):
         self.add_property('last_finish_time', program_info.last_finish_time)
 
     def __str__(self):
-        return ("Program: {} ; name {} ; id {}; run {}, finish {}".format(self.name, self.id, self.last_run_time, self.last_finish_time))
+        return ("Program: {}; id {}; run {}, finish {}".format(self.name, self.id, self.properties['last_run_time'], self.properties['last_finish_time']))
 
     def process_websocket_event(self,state_code,last_run_time,last_finish_time):
         state = 'unknown'

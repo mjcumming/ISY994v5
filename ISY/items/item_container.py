@@ -4,7 +4,7 @@
 
 container for a collection of items
 
-category = device, variable, program, scene
+container_type = device, variable, program, scene
 
 '''
 
@@ -13,13 +13,16 @@ logger = logging.getLogger(__name__)
 
 #containter events = {'add','remove','property'}
 
-class Item_Manager (object):
+class Item_Container (object):
 
-    def __init__(self, controller, category):
+    def __init__(self, controller, container_type):
         self.controller = controller
-        self.category = category
+        self.container_type = container_type
+        self.items_retrieved = False
 
         self.list = {} # indexed by device(node) address
+
+        self.started = False
 
     def start(self):
         pass
@@ -46,8 +49,8 @@ class Item_Manager (object):
         self.event(item,'property',property_,value)
     
     def event(self,item,event,*args): #publish event to controller
-        print ('item event',self.category,item.name,event)
-        #self.controller.item_event (self.category,item,event,args)
+        #print ('item event',self.container_type,item.name,event)
+        self.controller.container_event (self,item,event,args)
     
     
         

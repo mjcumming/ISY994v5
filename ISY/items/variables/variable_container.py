@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 import xml.etree.ElementTree as ET
 
-from .. item_manager import Item_Manager
+from .. item_container import Item_Container
 from .variable_info import Variable_Info
 from .variable_name import Variable_Name
 from .variable_integer import Variable_Integer
@@ -13,35 +13,38 @@ logger = logging.getLogger(__name__)
 variable_classes = {
     '1' : Variable_Integer,
     '2' : Variable_State,
-}
+} 
 
-class Variable_Manager (Item_Manager):
+class Variable_Container (Item_Container):
 
     def __init__(self, controller):
-        Item_Manager.__init__(self,controller,'Variable')
+        Item_Container.__init__(self,controller,'Variable')
 
     def start(self):
         success = True
 
-        variable_list_response = self.controller.send_request('vars/get/1') # get integer vars
-        variable_name_response = self.controller.send_request('vars/definitions/1') # get integer vars
+        success_list,variable_list_response = self.controller.send_request('vars/get/1') # get integer vars
+        success_name,variable_name_response = self.controller.send_request('vars/definitions/1') # get integer vars
 
-        if variable_list_response.status_code == 200 and variable_name_response.status_code == 200:
+        if success_list and success_name and variable_list_response.status_code == 200 and variable_name_response.status_code == 200:
             list_root = ET.fromstring (variable_list_response.content)        
             name_root = ET.fromstring (variable_name_response.content)        
             self.process_variable_nodes (list_root,name_root)       
         else:
             success = False
 
-        variable_list_response = self.controller.send_request('vars/get/2') # get state vars
-        variable_name_response = self.controller.send_request('vars/definitions/2') # get state vars
+        success_list,variable_list_response = self.controller.send_request('vars/get/2') # get state vars
+        success_name,variable_name_response = self.controller.send_request('vars/definitions/2') # get state vars
 
-        if variable_list_response.status_code == 200 and variable_name_response.status_code == 200:
+        if success_list and success_name and variable_list_response.status_code == 200 and variable_name_response.status_code == 200:
             list_root = ET.fromstring (variable_list_response.content)        
             name_root = ET.fromstring (variable_name_response.content)        
             self.process_variable_nodes (list_root,name_root)       
         else:
             success = False
+
+        if success:
+            self.items_retrieved = True
 
     def process_variable_nodes(self,list_root,name_root):
         for node in list_root.iter('var'):

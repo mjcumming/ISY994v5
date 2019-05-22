@@ -18,7 +18,7 @@ class Item_Base(object):
     def __init__(self, container):
         self.container = container
 
-        self.properties = {'status' : None} # list of properties key = property name, value = property value
+        self.properties = {'status' : 'init'} # list of properties key = property name, value = property value
 
     def process_websocket_event(self,event):
         pass # classes to override
