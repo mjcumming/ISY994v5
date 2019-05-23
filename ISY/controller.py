@@ -93,7 +93,7 @@ class Controller(object):
         self.restart_timer.start()
         
     def container_event(self,container,item,event,*args):
-        print ('Event {} from {}: {} {}'.format(item.name,container.container_type,item,args))
+        #print ('Event {} from {}: {} {}'.format(item.name,container.container_type,item,args))
         self.publish_container_event(container,item,event,*args)
 
     def publish_container_event(self,container,item,event,*args):
@@ -102,6 +102,7 @@ class Controller(object):
                 event_handler (container,item,event,args)
             except Exception as ex:
                 logger.error('Event handler Error {}'.format(ex))
+                traceback.print_exc()
             
     def send_request(self,path,query=None,timeout=None): 
         success,response = self.http_client.request(path,query,timeout)
@@ -160,11 +161,14 @@ class Controller(object):
 
 url = '192.168.1.213'
 
+def print_events(container,item,event,*args):
+    print ('Event {} from {}: {} {}'.format(event,container.container_type,item.name,args))
+
 
 if __name__ == "__main__":
 
     try:
-        c = Controller(url,username='admin',password='admin')
+        c = Controller(url,username='admin',password='admin',use_https=False,event_handler=print_events)
         time.sleep(2)
         #device = c.device_Container.get_device('42 C8 99 1')
         #print ('got device',device)
