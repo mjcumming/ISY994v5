@@ -14,7 +14,7 @@ class Controller_Base(Item_Base):
         self.name = id
 
         self.add_property('state', 'idle') 
-        self.add_property('heatbeat','none')
+        self.add_property('heartbeat','none')
         self.add_property('websocket','disconnnected')
         self.add_property('http','disconnected')
 
