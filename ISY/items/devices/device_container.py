@@ -70,7 +70,7 @@ class Device_Container (Item_Container):
 
                     device = device_class(self,device_info)
                     self.add(device,device.address)
-                    print ('added device',device.address)
+                    #print ('added device',device.address)
          
     def websocket_event(self,event):
         #print('Device event',event)

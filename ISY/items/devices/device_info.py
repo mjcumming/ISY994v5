@@ -67,9 +67,7 @@ class Device_Info(object):
 
             flag = node.get ('flag')
             self.flag = int(flag) 
-
-            types = type_.text.split('.')
-            device_category = types [0]
+            self.node_dev_id = node.get('nodeDefId')
 
             #container_node = node.find('container')
             #self.container_node_address = container_node.text  
@@ -86,5 +84,5 @@ class Device_Info(object):
                 traceback.print_exc()       
 
     def __repr__(self):
-        return 'Device: Name {} Address {}, Family {}, Type {}'.format(self.name,self.address,self.family,self.type)
+        return 'Device: Name {} Address {}, Family {}, Type {}, Def ID {}'.format(self.name,self.address,self.family,self.type,self.node_dev_id)
     

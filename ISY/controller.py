@@ -87,10 +87,17 @@ class Controller(object):
             
     def send_request(self,path,query=None,timeout=None): 
         success,response = self.http_client.request(path,query,timeout)
+        if success:
+            self.process_controller_event('http','connected')
+        else:
+            self.process_controller_event('http','error')
         return success, response
 
     def websocket_connected(self,connected): #True websocket connected, False, no connection
-        pass #TBD
+        if connected:
+            self.process_controller_event('websocket','connected')
+        else:
+            self.process_controller_event('websocket','disconnected')
 
     def websocket_event(self,event): #process websocket event
         #print ('WS Event {}'.format(event))

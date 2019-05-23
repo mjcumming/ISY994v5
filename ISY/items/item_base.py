@@ -27,8 +27,9 @@ class Item_Base(object):
         self.properties [property_] = value
 
     def set_property(self, property_, value): # propagates up to the container 
-        self.properties [property_] = value
-        self.container.property_change(self,property_,value) 
+        if self.properties [property_] != value:
+            self.properties [property_] = value
+            self.container.property_change(self,property_,value) 
  
     def get_property(self, property_):
         return self.properties [property_] 

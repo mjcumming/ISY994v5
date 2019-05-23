@@ -81,10 +81,10 @@ class Websocket_Client(object):
             logger.error('Websocket On Message Error {}'.format(ex))
 
     def _on_error(self,ws, error):
-        logger.error('Error: {}'.format(error))
+        logger.error('Websocket Error: {}'.format(error))
 
     def _on_close(self,ws):
-        logger.info('Disonnected')
+        logger.info('Websocket Disonnected')
         self.connected = False
         self.connect()
 
