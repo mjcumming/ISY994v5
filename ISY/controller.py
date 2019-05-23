@@ -3,6 +3,7 @@
 import time
 import datetime
 import traceback
+import threading 
 
 from items.devices.device_container import Device_Container 
 from items.scenes.scene_container import Scene_Container 
@@ -30,7 +31,13 @@ class Controller(object):
                 address = controller_list[0]
 
         if address is None:
-            print('no controller found')
+            logger.error('No controller address found')
+            quit()
+
+        self.address = address
+        self.port = port
+        self.username = username
+        self.password = password
 
         self.event_handlers = []
         if event_handler is not None:
@@ -46,33 +53,44 @@ class Controller(object):
 
         self.last_heartbeat = None
 
+        self.controller_container.start()        
+        
         self.start()
 
-        self.websocket_client = Websocket_Client(self,address,port,username,password,False)
 
     def start(self):
-        self.controller_container.start()
+        success = True
+        self.process_controller_event('status','init')        
 
         self.device_container.start()
         if self.device_container.items_retrieved is False:
-            self.process_controller_event('status','error')
-            return False
+            success = False
+
         self.scene_container.start() # need to check for result
         if self.scene_container.items_retrieved is False:
-            self.process_controller_event('status','error')
-            return False       
+            success = False  
+
         self.variable_container.start() # need to check for result
         if self.variable_container.items_retrieved is False:
-            self.process_controller_event('status','error')
-            return False 
+            success = False 
+
         self.program_container.start() # need to check for result
         if self.program_container.items_retrieved is False:
-            self.process_controller_event('status','error')
-            return False
+            success = False
         
-        self.process_controller_event('status','ready')
+        if success:
+            self.process_controller_event('status','ready')
+            self.websocket_client = Websocket_Client(self,self.address,self.port,self.username,self.password,False)
+        else:
+            self.process_controller_event('status','error')
+            self.retry_start(10)
 
-        return True
+    def retry_start(self,delay_seconds):
+        def restart ():
+            self.start()
+
+        self.restart_timer = threading.Timer(delay_seconds, restart) 
+        self.restart_timer.start()
         
     def container_event(self,container,item,event,*args):
         print ('Event {} from {}: {} {}'.format(item.name,container.container_type,item,args))

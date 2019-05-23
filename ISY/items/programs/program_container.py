@@ -43,28 +43,22 @@ class Program_Container (Item_Container):
          
     def websocket_event(self,event):
         #print('Program event',event)
-        try:
-            id = event.event_info_node.find('id').text.zfill(4) 
+        id = event.event_info_node.find('id').text.zfill(4) 
 
-            status = None
-            run_time = None
-            finish_time = None
-            
-            if event.event_info_node.find('s') is not None:
-                status = int(event.event_info_node.find('s').text )
-
-            if event.event_info_node.find('r') is not None:
-                run_time = event.event_info_node.find('r').text 
-
-            if event.event_info_node.find('f') is not None:
-                finish_time = event.event_info_node.find('f').text 
-
-            if status and run_time and finish_time:
-                program = self.get(id)
-                program.process_websocket_event (status,run_time,finish_time)
-
-        except Exception as e: 
-            print(e)
-
+        status = None
+        run_time = None
+        finish_time = None
         
+        if event.event_info_node.find('s') is not None:
+            status = int(event.event_info_node.find('s').text )
+
+        if event.event_info_node.find('r') is not None:
+            run_time = event.event_info_node.find('r').text 
+
+        if event.event_info_node.find('f') is not None:
+            finish_time = event.event_info_node.find('f').text 
+
+        if status and run_time and finish_time:
+            program = self.get(id)
+            program.process_websocket_event (status,run_time,finish_time)
 

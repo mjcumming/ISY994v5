@@ -71,5 +71,8 @@ class Variable_Container (Item_Container):
         index = variable_type+':'+variable_id
 
         variable = self.get(index)
-        variable.process_websocket_event(event)
+        if variable is not None:
+            variable.process_websocket_event(event)
+        else:
+            logger.warning('Unable able to find variable type {} id {}'.format(variable_id,variable_type))
 
