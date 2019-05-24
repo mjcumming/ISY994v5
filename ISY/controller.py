@@ -159,7 +159,7 @@ class Controller(object):
 
 
 
-url = '192.168.1.213'
+url = '192.168.2.73'
 
 def print_events(container,item,event,*args):
     print ('Event {} from {}: {} {}'.format(event,container.container_type,item.name,args))
