@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 
-setuptools.setup(name='ISY5',
+setuptools.setup(name='ISY994v5',
       version='0.0.0',
       description='ISY99 Controller Rest and Websocket client v5 firmware',
       author='Michael Cumming',
@@ -12,7 +12,7 @@ setuptools.setup(name='ISY5',
       long_description=long_description,
       long_description_content_type="text/markdown",      
       url='https://github.com/mjcumming/Homie',
-      keywords = ['INSTEON','ISY99'],  
+      keywords = ['INSTEON','ISY994'],  
       packages=setuptools.find_packages(exclude=("test",)),
       classifiers=[
             "Programming Language :: Python :: 3",
