@@ -60,5 +60,8 @@ class Program_Container (Item_Container):
 
         if status and run_time and finish_time:
             program = self.get(id)
-            program.process_websocket_event (status,run_time,finish_time)
+            if program:
+                program.process_websocket_event (status,run_time,finish_time)
+            else:
+                logger.warning('Unable able to find program type id {}'.format(id))
 
