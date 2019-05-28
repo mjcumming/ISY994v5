@@ -61,7 +61,7 @@ class Device_Container (Item_Container):
             #TBD add support for other device families
             if device_info.family == '1': #insteon devices
                 #override device cat for keypadlinc dimmer buttons and change to switch type devices
-                if device_info.category == '1' and device_info.address_parts [3] != '1': # maybe use node flag
+                if device_info.node_def_id.find('KeypadButton') and device_info.address_parts [3] != '1': # maybe use node flag
                     device_info.category = '2'
 
                 #create device

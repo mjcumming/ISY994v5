@@ -170,7 +170,7 @@ if __name__ == "__main__":
     try:
         c = Controller(url,username='admin',password='admin',use_https=False,event_handler=print_events)
         time.sleep(2)
-        #device = c.device_Container.get_device('42 C8 99 1')
+        device = c.device_Container.get_device('42 C8 99 1')
         #print ('got device',device)
 
         #scene = c.scene_Container.get_scene('25770')
@@ -180,12 +180,12 @@ if __name__ == "__main__":
 
         while True:
             time.sleep(2)
-            #device.set_level (0)
+            device.set_level (0)
             #scene.turn_on()
             #program.run()
             time.sleep(2)
             #scene.turn_off()
-            #device.set_level (100)
+            device.set_level (100)
             #program.run_else()
 
     except KeyboardInterrupt:

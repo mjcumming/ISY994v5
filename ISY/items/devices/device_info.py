@@ -67,7 +67,7 @@ class Device_Info(object):
 
             flag = node.get ('flag')
             self.flag = int(flag) 
-            self.node_dev_id = node.get('nodeDefId')
+            self.node_def_id = node.get('nodeDefId')
 
             #container_node = node.find('container')
             #self.container_node_address = container_node.text  
@@ -79,10 +79,12 @@ class Device_Info(object):
                 self.property_value = None
 
             self.valid = True
+
+            #print (self)
         
         except Exception as ex:
                 traceback.print_exc()       
 
     def __repr__(self):
-        return 'Device: Name {} Address {}, Family {}, Type {}, Def ID {}'.format(self.name,self.address,self.family,self.type,self.node_dev_id)
+        return 'Device: Name {} Address {}, Family {}, Type {}, Def ID {}'.format(self.name,self.address,self.family,self.type,self.node_def_id)
     
