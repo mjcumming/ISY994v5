@@ -7,13 +7,9 @@ from ..item_container import Item_Container
 
 from .device_info import Device_Info
 
-from .device_insteon_dimmer import Device_Insteon_Dimmer
-from .device_insteon_switch import Device_Insteon_Switch
+from .insteon import get_insteon_device_class
 
-insteon_device_classes = {
-    '1' : Device_Insteon_Dimmer,
-    '2' : Device_Insteon_Switch,
-}
+
 
 import logging
 logger = logging.getLogger(__name__)
@@ -57,20 +53,13 @@ class Device_Container (Item_Container):
 				8 = Brultech Products
 				9 = NCD Products
             '''
-            
-            #TBD add support for other device families
             if device_info.family == '1': #insteon devices
-                #override device cat for keypadlinc dimmer buttons and change to switch type devices
-                if device_info.node_def_id.find('KeypadButton') and device_info.address_parts [3] != '1': # maybe use node flag
-                    device_info.category = '2'
-
-                #create device
-                if device_info.category in insteon_device_classes:
-                    device_class = insteon_device_classes [device_info.category]
-
+                device_class = get_insteon_device_class (device_info)
+                if device_class is not None:
                     device = device_class(self,device_info)
                     self.add(device,device.address)
-                    #print ('added device',device.address)
+
+            
          
     def websocket_event(self,event):
         #print('Device event',event)
