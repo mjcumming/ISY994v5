@@ -7,7 +7,7 @@ from ..item_container import Item_Container
 
 from .device_info import Device_Info
 
-from .insteon import get_insteon_device_class
+from .insteon_device_manager import get_insteon_device_class
 
 
 

@@ -16,11 +16,10 @@ from .. item_base import Item_Base
 class Variable_Base(Item_Base):
 
     def __init__(self, container, variable_info): 
-        Item_Base.__init__(self,container)
+        Item_Base.__init__(self,container,variable_info.id) # replaced once names are retrieved
 
         self.id = variable_info.id
         self.type = variable_info.type
-        self.name = self.id # replaced once names are retrieved
 
         self.add_property ('init_value', variable_info.init_value)
         self.add_property ('value', variable_info.value)

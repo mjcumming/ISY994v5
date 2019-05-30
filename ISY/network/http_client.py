@@ -38,7 +38,7 @@ class HTTP_Client(object):
         url = self.compile_request(path,query)
 
         try:
-            logger.info('Request: {}'.format(url,timeout=timeout))
+            logger.debug('Request: {}'.format(url,timeout=timeout))
             response = self._session.get (url)
             response.raise_for_status()
             return True,response

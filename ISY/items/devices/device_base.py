@@ -16,8 +16,8 @@ from .. item_base import Item_Base
 
 class Device_Base(Item_Base):
 
-    def __init__(self, container, device_type):
-        Item_Base.__init__(self,container)
+    def __init__(self, container, device_type, name):
+        Item_Base.__init__(self,container, name)
 
         self.device_type = device_type
 

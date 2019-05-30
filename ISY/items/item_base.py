@@ -15,10 +15,14 @@ status property -> ready, alert, lost
 
 class Item_Base(object):
 
-    def __init__(self, container):
+    def __init__(self, container, name):
         self.container = container
 
+        self.name = name
+
         self.properties = {'status' : 'init'} # list of properties key = property name, value = property value
+
+        self.property_event_handlers = []
 
     def process_websocket_event(self,event):
         pass # classes to override
@@ -26,13 +30,19 @@ class Item_Base(object):
     def add_property(self, property_, value = None):
         self.properties [property_] = value
 
-    def set_property(self, property_, value): # propagates up to the container 
+    def set_property(self, property_, value): # propagates up to the container and to handlers
         if self.properties [property_] != value:
             self.properties [property_] = value
             self.container.property_change(self,property_,value) 
+
+            for handler in self.property_event_handlers:
+                handler (property_,value)
  
     def get_property(self, property_):
         return self.properties [property_] 
 
     def send_request(self,path,query=None,timeout=None): 
         return self.container.send_request(path,query,timeout)
+
+    def add_property_event_handler(self,handler):
+        self.property_event_handlers.append(handler)

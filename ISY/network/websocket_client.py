@@ -64,7 +64,7 @@ class Websocket_Client(object):
         self.connected = True
 
     def _on_message(self,ws, message):
-        logger.info('Websocket Message: {}'.format(message))
+        logger.debug('Websocket Message: {}'.format(message))
         #print('Websocket Message: {}'.format(message))
 
         try:

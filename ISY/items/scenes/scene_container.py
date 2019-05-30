@@ -49,7 +49,7 @@ class Scene_Container (Item_Container):
                 scene = scene_class(self,scene_info)
                 self.add(scene,scene.id)
         else:
-            logger.info ('Invalid scene info {}'.format(scene_info.name))
+            logger.warn ('Invalid scene info {}'.format(scene_info.name))
          
     def device_event(self,device): # notification from controller about a device event, used to "track" scene state
         for address,scene in self.list.items():

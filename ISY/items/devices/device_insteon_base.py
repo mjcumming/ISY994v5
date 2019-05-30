@@ -22,7 +22,6 @@ class Device_Insteon_Base(object):
         self.res = device_info.reserved
         self.address = device_info.address
         self.address_parts = device_info.address_parts
-        self.name = device_info.name
         self.flag = device_info.flag
         #self.container_node_address = device_info.container_node_address
 

@@ -8,7 +8,7 @@ from .. item_base import Item_Base
 class Controller_Base(Item_Base):
 
     def __init__(self, container, id):
-        Item_Base.__init__(self,container)
+        Item_Base.__init__(self,container,'ISY Controller')
 
         self.id = id
         self.name = id

@@ -6,8 +6,8 @@ from .device_base import Device_Base
 
 class Device_Dimmer(Device_Base):
 
-    def __init__(self, container):
-        Device_Base.__init__(self,container,'dimmer')
+    def __init__(self, container, name):
+        Device_Base.__init__(self,container,'dimmer', name)
 
         self.add_property('level',0) #in percent
 

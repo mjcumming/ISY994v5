@@ -15,10 +15,9 @@ from .. item_base import Item_Base
 class Scene_Base(Item_Base):
 
     def __init__(self, container, scene_info):
-        Item_Base.__init__(self,container)
+        Item_Base.__init__(self,container,scene_info.name)
 
         self.address = scene_info.address
-        self.name = scene_info.name
         self.flag = scene_info.flag
         self.id = scene_info.id
         self.family = scene_info.family
