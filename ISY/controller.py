@@ -169,9 +169,10 @@ if __name__ == "__main__":
 
     try:
         c = Controller(url,username='admin',password='admin',use_https=False,event_handler=print_events)
-        time.sleep(2)
+        time.sleep(2)  
+        device = c.device_container.get('14 A9 92 2')
         #device = c.device_container.get('42 C8 99 1')
-        #print ('got device',device)
+        print ('got device',device)
 
         #scene = c.scene_Container.get_scene('25770')
         #print ('got scene',scene)
@@ -181,9 +182,13 @@ if __name__ == "__main__":
         while True:
             time.sleep(2)
             #device.set_level (0)
+            #device.set_speed ('low')
+            #device.set_speed ('medium')
+            device.set_speed ('high')
             #scene.turn_on()
             #program.run()
             time.sleep(2)
+            device.set_speed ('off')
             #scene.turn_off()
             #device.set_level (100)
             #program.run_else()

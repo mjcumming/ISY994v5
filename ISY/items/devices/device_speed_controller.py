@@ -6,11 +6,13 @@ from .device_base import Device_Base
 
 class Device_Speed_Controller(Device_Base):
 
-    def __init__(self, container):
+    def __init__(self, container,speeds=['off','low','medium','high']):
         Device_Base.__init__(self,container,'speed_controller')
 
-        self.add_property('speed',0) #in percent
+        self.speeds = speeds
 
-    def set_level(self,speed):
+        self.add_property('speed','unknown') 
+
+    def set_speed(self,speed):
         pass
 

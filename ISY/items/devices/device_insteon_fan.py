@@ -4,37 +4,45 @@
 from .device_speed_controller import Device_Speed_Controller
 from .device_insteon_base import Device_Insteon_Base
 
-paddle_events = {'DON','DOFF','DIM','BRT','DFON','DFOF'}
+speeds=['off','low','medium','high']
 
 class Device_Insteon_Fan(Device_Speed_Controller,Device_Insteon_Base):
 
     def __init__(self, container, device_info):
-        Device_Speed_Controller.__init__(self,container)
+        Device_Speed_Controller.__init__(self,container,speeds)
         Device_Insteon_Base.__init__(self,device_info)
 
         if device_info.property_value:
-            try:
-                if int(device_info.property_value) > 0:
-                    self.set_property('onoff','on')
-                else:
-                    self.set_property('onoff','off')
-            except:
-                pass
+            self.set_property ('speed',self.level_to_speed(int(device_info.property_value)))
 
     def process_websocket_event(self,event):
             if event.control == 'ST':
-                if int(event.action) > 0:
-                    self.set_property('onoff','on')
-                else:
-                    self.set_property('onoff','off')
+                self.set_property ('speed',self.level_to_speed(int(event.action)))
 
-            elif event.control in paddle_events: #need to add other events
-                self.set_property('paddle_action',event.control)
-
-    def turn_on(self):
-        path = ('nodes/' + self.address + '/cmd/DON')
+    def set_speed (self,speed):
+        level = self.speed_to_level(speed)
+        path = ('nodes/' + self.address + '/cmd/DON/' + str(level))
         return self.send_request(path)
+ 
+    def level_to_speed(self,level):
+        if level == 0:
+            return'off'
+        elif level > 0 and level <= 63:
+            return 'low'
+        elif level >= 50 and level <= 191:
+           return 'medium'
+        else:
+            return 'high'
 
-    def turn_off(self):
-        path = ('nodes/' + self.address + '/cmd/DOF')
-        return self.send_request(path)
+    def speed_to_level(self,speed):
+        if speed == 'off':
+            return 0
+        elif speed == 'low':
+            return 63
+        elif speed == 'medium':
+            return 99
+        else:
+            return 255
+
+
+
