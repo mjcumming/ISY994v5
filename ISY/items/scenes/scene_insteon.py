@@ -8,7 +8,7 @@ class Scene_Insteon(Scene_Base):
     def __init__(self, container, scene_info):
         Scene_Base.__init__(self,container, scene_info)
 
-        self.add_property('state')
+        self.add_property('onoff')
 
     def process_websocket_event(self,event):
         pass # there are no events for scenes AFAICT
@@ -24,17 +24,17 @@ class Scene_Insteon(Scene_Base):
     def device_event(self,device): #device event, process and see if we are interested
         if device.family == '1': #insteon device
             if device.address in self.responders: # this scene has this device
-                scene_state = 'off'
+                scene_onoff = 'off'
                 for address in self.responders:
                     device = self.container.get_device(address)
                     if device is not None:
                         if device.category == '1': #insteon dimmer
                             if device.get_property ('level') > 0:
-                                scene_state ='on'
+                                scene_onoff ='on'
                         if device.category == '2': #insteon switch
                             if device.get_property ('onoff') == 'on':
-                                scene_state ='on'
+                                scene_onoff ='on'
                 
-                if scene_state != self.properties ['state']:
-                    self.set_property ('state',scene_state)
+                if scene_onoff != self.properties ['onoff']:
+                    self.set_property ('onoff',scene_onoff)
 

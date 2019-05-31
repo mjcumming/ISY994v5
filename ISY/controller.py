@@ -5,15 +5,15 @@ import datetime
 import traceback
 import threading 
 
-from items.devices.device_container import Device_Container 
-from items.scenes.scene_container import Scene_Container 
-from items.variables.variable_container import Variable_Container 
-from items.programs.program_container import Program_Container 
-from items.controller.controller_container import Controller_Container 
+from .items.devices.device_container import Device_Container 
+from .items.scenes.scene_container import Scene_Container 
+from .items.variables.variable_container import Variable_Container 
+from .items.programs.program_container import Program_Container 
+from .items.controller.controller_container import Controller_Container 
 
-from network.http_client import HTTP_Client
-from network.websocket_client import Websocket_Client
-from network.discover import Discover
+from .network.http_client import HTTP_Client
+from .network.websocket_client import Websocket_Client
+from .network.discover import Discover
 
 import logging
 logger = logging.getLogger(__name__)
@@ -66,15 +66,15 @@ class Controller(object):
         if self.device_container.items_retrieved is False:
             success = False
 
-        self.scene_container.start() # need to check for result
+        self.scene_container.start() 
         if self.scene_container.items_retrieved is False:
             success = False  
 
-        self.variable_container.start() # need to check for result
+        self.variable_container.start() 
         if self.variable_container.items_retrieved is False:
             success = False 
 
-        self.program_container.start() # need to check for result
+        self.program_container.start()
         if self.program_container.items_retrieved is False:
             success = False
         
@@ -93,7 +93,7 @@ class Controller(object):
         self.restart_timer.start()
         
     def container_event(self,container,item,event,*args):
-        #print ('Event {} from {}: {} {}'.format(item.name,container.container_type,item,args))
+        #print ('Event {} from .{}: {} {}'.format(item.name,container.container_type,item,args))
         self.publish_container_event(container,item,event,*args)
 
     def publish_container_event(self,container,item,event,*args):
@@ -122,7 +122,7 @@ class Controller(object):
         #print ('WS Event {}'.format(event))
         try:
 
-            if event.address is not None: #event from a device/node
+            if event.address is not None: #event from .a device/node
                 self.device_container.websocket_event (event)
 
             if event.control == '_0': # heartbeat
@@ -156,42 +156,3 @@ class Controller(object):
             self.process_controller_event('state','busy')
 
 
-
-
-
-url = '192.168.1.213'
-
-def print_events(container,item,event,*args):
-    print ('Event {} from {}: {} {}'.format(event,container.container_type,item.name,args))
-
-
-if __name__ == "__main__":
-
-    try:
-        c = Controller(url,username='admin',password='admin',use_https=False,event_handler=print_events)
-        time.sleep(2)  
-        #device = c.device_container.get('14 A9 92 2')
-        #device = c.device_container.get('42 C8 99 1')
-        #print ('got device',device)
-
-        #scene = c.scene_Container.get_scene('25770')
-        #print ('got scene',scene)
-
-        #program = c.program_Container.get_program ('0022')
-
-        while True:
-            time.sleep(2)
-            #device.set_level (0)
-            #device.set_speed ('low')
-            #device.set_speed ('medium')
-            #device.set_speed ('high')
-            #scene.turn_on()
-            #program.run()
-            time.sleep(2)
-            #device.set_speed ('off')
-            #scene.turn_off()
-            #device.set_level (100)
-            #program.run_else()
-
-    except KeyboardInterrupt:
-        print("KeyboardInterrupt has been caught.")
