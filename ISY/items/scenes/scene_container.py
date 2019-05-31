@@ -47,7 +47,8 @@ class Scene_Container (Item_Container):
                 scene_class = scene_classes [scene_info.family]
 
                 scene = scene_class(self,scene_info)
-                self.add(scene,scene.id)
+                scene.update_onoff()
+                self.add(scene,scene.address)
         else:
             logger.warn ('Invalid scene info {}'.format(scene_info.name))
          
@@ -56,7 +57,7 @@ class Scene_Container (Item_Container):
             scene.device_event (device)
 
     def get_device(self,address):
-        return self.controller.device_Container.get_device(address)
+        return self.controller.device_container.get(address)
     
         
 

@@ -16,10 +16,12 @@ try:
     #device = c.device_container.get('42 C8 99 1')
     #print ('got device',device)
 
-    #scene = c.scene_Container.get_scene('25770')
+    #scene = c.scene_container.get('25770')
     #print ('got scene',scene)
 
-    #program = c.program_Container.get_program ('0022')
+    #program = c.program_container.get_program ('0022')
+
+    var = c.variable_container.get('2:8')
 
     while True:
         time.sleep(2)
@@ -29,7 +31,9 @@ try:
         #device.set_speed ('high')
         #scene.turn_on()
         #program.run()
+        var.set_value(1)
         time.sleep(2)
+        var.set_value(2)
         #device.set_speed ('off')
         #scene.turn_off()
         #device.set_level (100)

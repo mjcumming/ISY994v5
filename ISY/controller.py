@@ -96,6 +96,9 @@ class Controller(object):
         #print ('Event {} from .{}: {} {}'.format(item.name,container.container_type,item,args))
         self.publish_container_event(container,item,event,*args)
 
+        if container.container_type == 'Device':# propagate to scene container to see if we should update
+            self.scene_container.device_event(item)
+
     def publish_container_event(self,container,item,event,*args):
         for event_handler in self.event_handlers:
             try:

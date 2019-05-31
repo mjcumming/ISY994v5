@@ -38,3 +38,9 @@ class Variable_Base(Item_Base):
 
         self.set_property ('value',value)
         self.set_property ('time_set',time_set)
+
+    def set_value(self,value):
+        path = ('vars/set/' + self.type + '/' + self.id + '/' + str(value))
+        return self.send_request(path)        
+
+
