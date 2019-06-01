@@ -58,6 +58,8 @@ class Device_Container (Item_Container):
                 if device_class is not None:
                     device = device_class(self,device_info)
                     self.add(device,device.address)
+                else:
+                    logger.warn('No device class for {}'.format(device_info))
 
             
          
