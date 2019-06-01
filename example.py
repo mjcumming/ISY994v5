@@ -12,9 +12,9 @@ def print_events(container,item,event,*args):
 try:
     c = Controller(url,username='admin',password='admin',use_https=False,event_handler=print_events)
     time.sleep(2)  
-    #device = c.device_container.get('14 A9 92 2')
+    device = c.device_container.get('14 A9 92 2')
     #device = c.device_container.get('42 C8 99 1')
-    #print ('got device',device)
+    print ('got device',device)
 
     #scene = c.scene_container.get('25770')
     #print ('got scene',scene)

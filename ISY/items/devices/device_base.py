@@ -21,3 +21,6 @@ class Device_Base(Item_Base):
 
         self.device_type = device_type
 
+    def __str__(self):
+        return ('Device {}, type {}, ID {}'.format(self.name,self.device_type,self.address))
+

@@ -21,9 +21,9 @@ class Program_Base(Item_Base):
     def __init__(self, container, program_info):
         Item_Base.__init__(self,container,program_info.name)
 
-        self.add_property('state', 'idle') #program run state
-
         self.id = program_info.id
+
+        self.add_property('state', 'idle') #program run state
         self.add_property('last_run_time', program_info.last_run_time)
         self.add_property('last_finish_time', program_info.last_finish_time)
 
