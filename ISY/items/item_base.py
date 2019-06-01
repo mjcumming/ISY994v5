@@ -6,8 +6,8 @@ Base Device
 
 Common to all ISY items ie programs, variables, devices, scenes
 
-
 status property -> ready, alert, lost
+
 
 '''
 
@@ -46,3 +46,6 @@ class Item_Base(object):
 
     def add_property_event_handler(self,handler):
         self.property_event_handlers.append(handler)
+
+    def get_identifier(self):
+        pass # subclasses to provide

@@ -65,5 +65,6 @@ class Program_Base(Item_Base):
     def disable(self):
         self.command('disable')
         
-        
+    def get_identifier(self):
+        return self.id        
         

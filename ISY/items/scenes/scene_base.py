@@ -34,3 +34,7 @@ class Scene_Base(Item_Base):
 
     def device_event(self,device): #device event, process and see if we are interested
         pass # subclasses to provide
+
+    def get_identifier(self):
+        return self.address       
+        

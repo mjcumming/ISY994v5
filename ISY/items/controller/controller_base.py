@@ -21,4 +21,6 @@ class Controller_Base(Item_Base):
     def __str__(self):
         return ("Controller: {}; state {}; status {}".format(self.id, self.properties['state'], self.properties['status']))
 
+    def get_identifier(self):
+        return self.id   
  

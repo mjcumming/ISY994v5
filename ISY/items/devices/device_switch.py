@@ -7,8 +7,8 @@ from .device_base import Device_Base
 
 class Device_Switch(Device_Base):
 
-    def __init__(self, container,name):
-        Device_Base.__init__(self,container,'switch',name)
+    def __init__(self, container,name,address):
+        Device_Base.__init__(self,container,'switch',name,address)
 
         self.add_property('onoff','off')
 

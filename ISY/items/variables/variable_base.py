@@ -43,4 +43,6 @@ class Variable_Base(Item_Base):
         path = ('vars/set/' + self.type + '/' + self.id + '/' + str(value))
         return self.send_request(path)        
 
-
+    def get_identifier(self):
+        return self.self.get_index()       
+        
