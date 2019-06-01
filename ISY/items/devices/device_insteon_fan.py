@@ -1,15 +1,15 @@
 #! /usr/bin/env python
 
 
-from .device_speed_controller import Device_Speed_Controller
+from .device_fan import Device_Fan
 from .device_insteon_base import Device_Insteon_Base
 
 speeds=['off','low','medium','high']
 
-class Device_Insteon_Fan(Device_Speed_Controller,Device_Insteon_Base):
+class Device_Insteon_Fan(Device_Fan,Device_Insteon_Base):
 
     def __init__(self, container, device_info):
-        Device_Speed_Controller.__init__(self,container,device_info.name,speeds)
+        Device_Fan.__init__(self,container,device_info.name,speeds)
         Device_Insteon_Base.__init__(self,device_info)
 
         if device_info.property_value:
