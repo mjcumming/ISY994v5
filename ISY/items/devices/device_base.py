@@ -16,10 +16,11 @@ from .. item_base import Item_Base
 
 class Device_Base(Item_Base):
 
-    def __init__(self, container, device_type, name):
+    def __init__(self, container, device_type, name, address):
         Item_Base.__init__(self,container, name)
 
         self.device_type = device_type
+        self.address = address
 
     def __str__(self):
         return ('Device {}, type {}, ID {}'.format(self.name,self.device_type,self.address))
