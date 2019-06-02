@@ -4,7 +4,7 @@
 from .device_dimmer import Device_Dimmer
 from .device_insteon_base import Device_Insteon_Base
 
-paddle_events = {'DON','DOFF','DIM','BRT','DFON','DFOF'}
+paddle_events = {'DON','DOF','DIM','BRT','DFON','DFOF'}
 
 class Device_Insteon_Dimmer(Device_Dimmer,Device_Insteon_Base):
 
@@ -26,7 +26,7 @@ class Device_Insteon_Dimmer(Device_Dimmer,Device_Insteon_Base):
                 #print ('device {}. changed status to {}'.format(self.name,event.action))
 
             elif event.control in paddle_events: #need to add other events
-                self.set_property('paddle_action',event.control)
+                self.set_property('paddle_action',event.control,True)
                 #print ('device {}. changed local control {}'.format(self.name,event.action))
 
     def set_level(self,level):

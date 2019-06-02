@@ -5,18 +5,12 @@
 from .device_base import Device_Base
 
 
-class Device_Switch(Device_Base):
+class Device_Contact (Device_Base):
 
-    def __init__(self, container,name):
-        Device_Base.__init__(self,container,'switch',name)
+    def __init__(self, container,name,address):
+        Device_Base.__init__(self,container,'contact',name,address)
 
-        self.add_property('onoff','off')
-
-    def turn_on(self):
-        pass
-
-    def turn_off(self):
-        pass
+        self.add_property('contact','')
 
 
 

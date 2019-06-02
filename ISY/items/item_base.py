@@ -30,8 +30,8 @@ class Item_Base(object):
     def add_property(self, property_, value = None):
         self.properties [property_] = value
 
-    def set_property(self, property_, value): # propagates up to the container and to handlers
-        if self.properties [property_] != value:
+    def set_property(self, property_, value, always_publish=False): # propagates up to the container and to handlers
+        if self.properties [property_] != value or always_publish:
             self.properties [property_] = value
             self.container.property_change(self,property_,value) 
 
