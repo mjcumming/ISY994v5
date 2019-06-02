@@ -2,36 +2,19 @@
 
 
 
-from .device_switch import Device_Switch
+from .device_base import Device_Base
 from .device_insteon_base import Device_Insteon_Base
 
 paddle_events = {'DON','DOF','DIM','BRT','DFON','DFOF'}
 
-class Device_Insteon_Controller(Device_Switch,Device_Insteon_Base):
+class Device_Insteon_Controller(Device_Base,Device_Insteon_Base):
 
     def __init__(self, container, device_info):
-        Device_Switch.__init__(self,container,device_info.name,device_info.address)
-        self.device_type = 'controller'
-        
+        Device_Base.__init__(self,container,'controller',device_info.name,device_info.address)
         Device_Insteon_Base.__init__(self, device_info)
 
         self.add_property('paddle_action')
 
-        if device_info.property_value:
-            try:
-                if int(device_info.property_value) > 0:
-                    self.set_property('onoff','on')
-                else:
-                    self.set_property('onoff','off')
-            except:
-                pass
-
     def process_websocket_event(self,event):
-            if event.control == 'ST':
-                if int(event.action) > 0:
-                    self.set_property('onoff','on')
-                else:
-                    self.set_property('onoff','off')
-
-            elif event.control in paddle_events: 
-                self.set_property('paddle_action',event.control,True)
+        if event.control in paddle_events: 
+            self.set_property('paddle_action',event.control,True)

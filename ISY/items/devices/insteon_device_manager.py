@@ -40,11 +40,13 @@ def get_insteon_device_class (device_info):
         #if device_info.category in dev_cat_sub_cat and device_info.sub_category in dev_cat_sub_cat [device_info.category]:
 
         #override device cat for keypadlinc dimmer buttons and change to switch type devices
-        if device_info.node_def_id.find('KeypadButton') and device_info.address_parts [3] != '1': # maybe use node flag
+        if device_info.node_def_id.find('KeypadButton') > 0 and device_info.address_parts [3] != '1': # maybe use node flag
             device_info.category = '2'
 
         #find device class
         #check for specific devcat/subcat
+
+        #print (device_info,device_info.category)
 
         if device_info.category in insteon_device_classes:
             device_class = insteon_device_classes [device_info.category]
