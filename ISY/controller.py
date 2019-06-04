@@ -1,9 +1,10 @@
 #! /usr/bin/env python
 
 import time
-import datetime
 import traceback
 import threading 
+from datetime import datetime
+from datetime import timedelta
 
 from .items.devices.device_container import Device_Container 
 from .items.scenes.scene_container import Scene_Container 
@@ -14,6 +15,8 @@ from .items.controller.controller_container import Controller_Container
 from .network.http_client import HTTP_Client
 from .network.websocket_client import Websocket_Client
 from .network.discover import Discover
+
+from .support.repeating_timer import Repeating_Timer
 
 import logging
 logger = logging.getLogger(__name__)
@@ -57,26 +60,29 @@ class Controller(object):
         
         self.start()
 
+        self.watch_dog_timer = Repeating_Timer(30)
+        self.watch_dog_timer.add_callback(self.watch_dog_check)
 
     def start(self):
         success = True
         self.process_controller_event('status','init')        
 
-        self.device_container.start()
         if self.device_container.items_retrieved is False:
-            success = False
+            if self.device_container.start() is False:
+                success = False
 
-        self.scene_container.start() 
         if self.scene_container.items_retrieved is False:
-            success = False  
+            if self.scene_container.start() is False:
+               success = False  
 
-        self.variable_container.start() 
         if self.variable_container.items_retrieved is False:
-            success = False 
+            if self.variable_container.start() is False:
+                success = False 
 
-        self.program_container.start()
+        
         if self.program_container.items_retrieved is False:
-            success = False
+            if self.program_container.start() is False:
+                success = False
         
         if success:
             self.process_controller_event('status','ready')
@@ -149,8 +155,9 @@ class Controller(object):
         controller.set_property(property_,value)
 
     def process_heartbeat(self,event):
-        self.last_heartbeat = datetime.datetime.now()
+        self.last_heartbeat = datetime.now()
         self.process_controller_event('heartbeat',self.last_heartbeat)
+        self.heartbeat_interval = int(event.action)
 
     def process_system_status(self,event):
         if event.action =='0': #idle
@@ -158,4 +165,7 @@ class Controller(object):
         elif event.action == '1':#busy
             self.process_controller_event('state','busy')
 
-
+    def watch_dog_check(self):
+        if self.last_heartbeat + timedelta (seconds=self.heartbeat_interval) < datetime.now():
+            logger.warn('Watchdog timer triggered. Restarting')
+            self.start()

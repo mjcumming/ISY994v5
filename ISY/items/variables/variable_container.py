@@ -45,6 +45,9 @@ class Variable_Container (Item_Container):
 
         if success:
             self.items_retrieved = True
+            return True
+        else:
+            return False
 
     def process_variable_nodes(self,list_root,name_root):
         for node in list_root.iter('var'):

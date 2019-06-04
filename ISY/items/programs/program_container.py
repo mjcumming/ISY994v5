@@ -26,9 +26,12 @@ class Program_Container (Item_Container):
                 root = ET.fromstring (response.content)        
                 self.process_program_nodes (root)    
                 self.items_retrieved = True
+                return True
             except Exception as ex:
                 logger.error('container error {}'.format(ex))
                 traceback.print_exc()
+        else:
+            return False
 
     def process_program_nodes(self,root):
         for program in root.iter('program'):

@@ -17,6 +17,10 @@ class Controller_Container (Item_Container):
 
         controller = Controller_Base(self,'controller')
         self.add(controller,controller.id)
+
+        self.items_retrieved = True
+
+        return True
          
     def controller_event(self,propery,value):
         controller = self.get('controller')
