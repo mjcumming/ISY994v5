@@ -155,7 +155,7 @@ class Controller(object):
         controller.set_property(property_,value)
 
     def process_heartbeat(self,event):
-        self.last_heartbeat = datetime.now()
+        self.last_heartbeat = datetime.now()#.strftime("%m/%d/%Y, %H:%M:%S")
         self.process_controller_event('heartbeat',self.last_heartbeat)
         self.heartbeat_interval = int(event.action)
 
