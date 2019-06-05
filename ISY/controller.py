@@ -108,7 +108,7 @@ class Controller(object):
     def publish_container_event(self,container,item,event,*args):
         for event_handler in self.event_handlers:
             try:
-                event_handler (container,item,event,args)
+                event_handler (container,item,event,*args)
             except Exception as ex:
                 logger.error('Event handler Error {}'.format(ex))
                 traceback.print_exc()

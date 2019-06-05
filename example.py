@@ -7,7 +7,7 @@ url = '192.168.1.213'
 #url = None
 
 def print_events(container,item,event,*args):
-    print ('Event {} from {}: {} {}'.format(event,container.container_type,item.name,args))
+    print ('Event {} from {}: {} {}'.format(event,container.container_type,item.name,*args))
 
 
 try:
