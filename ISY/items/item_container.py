@@ -8,6 +8,8 @@ container_type = device, variable, program, scene
 
 '''
 
+import copy
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -47,6 +49,9 @@ class Item_Container (object):
             return self.list [key]
         else:
             return None
+
+    def get_list_copy(self):
+        return copy.copy(self.list)
 
     def property_change(self,item,property_,value): # called by the item to publish a change
         self.event(item,'property',property_,value)

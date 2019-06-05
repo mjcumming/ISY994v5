@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 
 setuptools.setup(name='ISY994v5',
-      version='0.1.9',
+      version='0.2.0',
       description='ISY99 Controller Rest and Websocket client v5 firmware',
       author='Michael Cumming',
       author_email='mike@4831.com',
