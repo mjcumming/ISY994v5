@@ -30,7 +30,7 @@ class Device_Insteon_Dimmer(Device_Dimmer,Device_Insteon_Base):
                 #print ('device {}. changed local control {}'.format(self.name,event.action))
 
     def set_level(self,level):
-        path = ('nodes/' + self.address + '/cmd/DON/' + str(int(level*255)))
+        path = ('nodes/' + self.address + '/cmd/DON/' + str(int(level/100*255)))
         return self.send_request(path)
 
     def fast_on(self):
