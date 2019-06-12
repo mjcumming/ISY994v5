@@ -45,7 +45,7 @@ class Scene_Info(object):
             self.valid = True
 
         except Exception as ex:
-                print ('scene info error',ex)
+                #print ('scene info error',ex)
                 traceback.print_exc()               
 
     def __repr__(self):
