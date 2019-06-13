@@ -1,10 +1,10 @@
 
 import time
 
-from ISY.controller import Controller
+from isy.controller import Controller
 
 url = '192.168.1.213'
-#url = None
+#url = None # use autodiscovery
 
 def print_events(container,item,event,*args):
     print ('Event {} from {}: {} {}'.format(event,container.container_type,item.name,*args))
