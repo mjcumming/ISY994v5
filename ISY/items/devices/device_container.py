@@ -57,6 +57,7 @@ class Device_Container (Item_Container):
 				8 = Brultech Products
 				9 = NCD Products
             '''
+            #TBD add support for other device families
             if device_info.family == '1': #insteon devices
                 device_class = get_insteon_device_class (device_info)
                 if device_class is not None:
