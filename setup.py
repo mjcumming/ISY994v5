@@ -5,8 +5,8 @@ with open("README.md", "r") as fh:
 
 
 setuptools.setup(
-    name='isy',
-    version='0.2.6',
+    name='ISY994v5',
+    version='0.3.0',
     description='ISY99 Controller Rest and Websocket client v5 firmware',
     author='Michael Cumming',
     author_email='mike@4831.com',
@@ -14,7 +14,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url='https://github.com/mjcumming/ISY994v5',
     keywords=['INSTEON', 'ISY994', 'ISY', 'Universal Devices'],
-    packages=['isy'],
+    packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
