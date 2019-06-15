@@ -44,5 +44,5 @@ class Variable_Base(Item_Base):
         return self.send_request(path)        
 
     def get_identifier(self):
-        return self.self.get_index()       
+        return self.get_index()       
         
