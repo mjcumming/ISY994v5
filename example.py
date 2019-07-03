@@ -3,7 +3,7 @@ import time
 
 from isy.controller import Controller
 
-url = '192.168.1.213'
+url = '192.168.2.73'
 #url = None # use autodiscovery
 
 def print_events(container,item,event,*args):
