@@ -1,7 +1,7 @@
 
 import time
 
-from isy.controller import Controller
+from isy994.controller import Controller
 
 url = '192.168.2.73'
 #url = None # use autodiscovery
