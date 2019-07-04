@@ -30,15 +30,17 @@ dev_cat_sub_cat = {
 '''
 def get_insteon_device_class (device_info):
 
+    #print ('Insteon Device Class')
     #look for specific device dev/sub cat that need special handling
     #print(device_info)
     if device_info.category == '1' and device_info.sub_category == '46' and device_info.address_parts [3] == '2': # fanlinc motor
         return Device_Insteon_Fan
 
+    #print (device_info.node_def_id.find('KeypadButton') , device_info.address_parts [3])
     #override device cat for keypadlinc dimmer buttons and change to switch type devices
-    if device_info.node_def_id.find('KeypadButton') > 0 and device_info.address_parts [3] != '1': # maybe use node flag
+    if device_info.node_def_id.find('KeypadButton') == 0 and device_info.address_parts [3] != '1': # maybe use node flag
         device_info.category = '2'
-
+      
     #find device class
     #check for specific devcat/subcat
 
