@@ -22,7 +22,7 @@ class Device_Insteon_Dimmer(Device_Dimmer,Device_Insteon_Base):
 
     def process_websocket_event(self,event):
             if event.control == 'ST':
-                self.set_property('level',int(event.action)/255*100)
+                self.set_property('level',int(int(event.action)/255*100))
                 #print ('device {}. changed status to {}'.format(self.name,event.action))
 
             elif event.control in paddle_events: #need to add other events
