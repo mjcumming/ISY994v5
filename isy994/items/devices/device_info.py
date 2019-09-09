@@ -46,9 +46,12 @@ class Device_Info(object):
         self.valid = False
 
         try:
-            self.family = '1' # default to insteon
-            if node.find('family'): # insteon does not set node family
-                self.family = node.find('family').text
+            self.family = None
+            family_ = node.find('family')
+            if family_ is not None:
+                self.family = family_.text
+            else:
+                self.family = '1'
 
             type_ = node.find('type')
             self.type = type_.text
