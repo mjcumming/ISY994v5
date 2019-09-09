@@ -81,6 +81,12 @@ class Device_Info(object):
             else:
                 self.property_value = None
 
+            self.devtype_cat = None
+            devtype_node = node.find('devtype')
+            devtype_cat_ = devtype_node.find('cat')
+            if devtype_cat_ is not None:
+                self.devtype_cat = devtype_cat_.text
+
             self.valid = True
 
             #print (self)
@@ -89,5 +95,5 @@ class Device_Info(object):
                 traceback.print_exc()       
 
     def __repr__(self):
-        return 'Device: Name {} Address {}, Family {}, Type {}, Def ID {}'.format(self.name,self.address,self.family,self.type,self.node_def_id)
+        return 'Device: Name {} Address {}, Family {}, Type {}, DevCat {}, Def ID {}'.format(self.name,self.address,self.family,self.type,self.devtype_cat,self.node_def_id)
     
