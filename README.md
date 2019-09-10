@@ -19,7 +19,7 @@ Example usage:
 ~~~~
 import time
 
-from isy.controller import Controller
+from isy994.controller import Controller
 
 url = 'xxx.xxx.xxx.xxx'
 #url = None # use autodiscovery

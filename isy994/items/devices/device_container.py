@@ -4,12 +4,9 @@ import xml.etree.ElementTree as ET
 import traceback
 
 from ..item_container import Item_Container
-
 from .device_info import Device_Info
-
 from .insteon_device_manager import get_insteon_device_class
-
-
+from .zwave_device_manager import get_zwave_device_class
 
 import logging
 logger = logging.getLogger(__name__)
@@ -59,13 +56,20 @@ class Device_Container (Item_Container):
             '''
             #TBD add support for other device families
             if device_info.family == '1': #insteon devices
-                device_class = get_insteon_device_class (device_info)
+                device_class = get_insteon_device_class(device_info)
                 if device_class is not None:
                     device = device_class(self,device_info)
                     self.add(device,device.address)
                 else:
                     logger.warn('No device class for {}'.format(device_info))
-
+            elif device_info.family == '4': #z-wave devices
+                print(device_info)
+                device_class = get_zwave_device_class(device_info)
+                if device_class is not None:
+                    device = device_class(self, device_info)
+                    self.add(device, device.address)
+                else:
+                    logger.warn('No device class for {}'.format(device_info))
             
          
     def websocket_event(self,event):
