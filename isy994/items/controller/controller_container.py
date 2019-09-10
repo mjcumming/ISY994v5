@@ -22,6 +22,6 @@ class Controller_Container (Item_Container):
 
         return True
          
-    def controller_event(self,propery,value):
+    def controller_event(self,property, value):
         controller = self.get('controller')
-        controller.set_property(propery,value)
+        controller.set_property(property, value)
