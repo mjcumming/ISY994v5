@@ -51,10 +51,11 @@ class Device_Info(object):
             if family_ is not None:
                 self.family = family_.text
             else:
-                self.family = '1'
+                self.family = '1'        
 
             type_ = node.find('type')
             self.type = type_.text
+
             types = type_.text.split('.')
             self.category = types [0]    
             self.sub_category = types [1]    
@@ -89,11 +90,12 @@ class Device_Info(object):
 
             self.valid = True
 
-            #print (self)
-        
+            # print (self)
+
         except Exception as ex:
                 traceback.print_exc()       
 
     def __repr__(self):
-        return 'Device: Name {} Address {}, Family {}, Type {}, DevCat {}, Def ID {}'.format(self.name,self.address,self.family,self.type,self.devtype_cat,self.node_def_id)
+        return 'Device: Name {} Address {}, Family {}, Type {}, DevCat {}, Def ID {}'.format(self.name,self.address,
+                 self.family,self.type,self.devtype_cat,self.node_def_id)
     
