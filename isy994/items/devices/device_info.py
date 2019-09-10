@@ -81,7 +81,19 @@ class Device_Info(object):
                 self.property_value = property_node.attrib['value']
             else:
                 self.property_value = None
-
+            if 'formatted' in property_node.attrib:
+                self.property_format = property_node.attrib['format']
+            else:
+                self.property_format = None
+            if 'uofm' in property_node.attrib:
+                self.property_uofm = property_node.attrib['uofm']
+            else:
+                self.property_uofm = None
+            if 'prec' in property_node.attrib:
+                self.property_prec = property_node.attrib['prec']
+            else:
+                self.property_prec = None   
+                                             
             self.devtype_cat = None
             devtype_node = node.find('devtype')
             devtype_cat_ = devtype_node.find('cat')

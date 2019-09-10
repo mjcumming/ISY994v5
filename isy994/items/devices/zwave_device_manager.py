@@ -2,32 +2,21 @@
 
 ''' 
 
-returns a device instance using node data from an insteon device, None if unable to create device
+returns a device instance using node data from an zwave device, None if unable to create device
 
 '''
-#
-# from .device_insteon_dimmer import Device_Insteon_Dimmer
-# from .device_insteon_switch import Device_Insteon_Switch
-# from .device_insteon_fan import Device_Insteon_Fan
-# from .device_insteon_contact import Device_Insteon_Contact
 
 from .device_zwave_controller import Device_ZWave_Controller
 
 from .device_zwave_genericrspctl import Device_ZWave_GenericRspCtl
+from .device_zwave_power import Device_ZWave_Power
 
-# insteon_device_classes = {
-#     '0'  : Device_Insteon_Controller,
-#     '1'  : Device_Insteon_Dimmer,
-#     '2'  : Device_Insteon_Switch,
-#     '14' : Device_Insteon_Switch,
-#     '16' : Device_Insteon_Contact,
-# }
 
 zwave_device_classes = {
     # '118' : Device_ZWave_MultilevelSensor,
     '121' : Device_ZWave_GenericRspCtl,
     # '140' : Device_ZWave_Thermostat,
-    # '143' : Device_ZWave_EnergyMonitor,
+    '143' : Device_ZWave_Power,
     # '155' : Device_ZWave_MotionSensor,
     # '156' : Device_ZWave_SmokeSensor,
     # '157' : Device_ZWave_TamperAlarm,
@@ -36,14 +25,6 @@ zwave_device_classes = {
     # '185' : Device_ZWave_NotificationSensor,
 }
 
-'''
-dev_cat_sub_cat = {
-    '1' : {
-        '46' : Device_Insteon_Fan,
-    },
-}
-
-'''
 def get_zwave_device_class (device_info):
 
     #print ('Z-Wave Device Class')
