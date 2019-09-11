@@ -96,9 +96,10 @@ class Device_Info(object):
                                              
             self.devtype_cat = None
             devtype_node = node.find('devtype')
-            devtype_cat_ = devtype_node.find('cat')
-            if devtype_cat_ is not None:
-                self.devtype_cat = devtype_cat_.text
+            if devtype_node is not None:
+                devtype_cat_ = devtype_node.find('cat')
+                if devtype_cat_ is not None:
+                    self.devtype_cat = devtype_cat_.text
 
             self.valid = True
 
