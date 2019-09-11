@@ -82,7 +82,7 @@ class Device_Info(object):
             else:
                 self.property_value = None
             if 'formatted' in property_node.attrib:
-                self.property_format = property_node.attrib['format']
+                self.property_format = property_node.attrib['formatted']
             else:
                 self.property_format = None
             if 'uofm' in property_node.attrib:
