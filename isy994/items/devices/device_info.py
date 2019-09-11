@@ -45,6 +45,8 @@ class Device_Info(object):
 
         self.valid = False
 
+        self.properties = {}
+
         try:
             self.family = None
             family_ = node.find('family')
@@ -75,7 +77,12 @@ class Device_Info(object):
 
             #container_node = node.find('container')
             #self.container_node_address = container_node.text  
-        
+
+            for node_property in node.iter('property'):
+                id = node_property.attrib ['id']
+                self.properties [id] = node_property.items()
+
+            # this to be removed, need to move to using the properties dictionary above
             property_node = node.find('property')
             if 'value' in property_node.attrib:
                 self.property_value = property_node.attrib['value']
@@ -105,7 +112,7 @@ class Device_Info(object):
 
             # print (self)
 
-        except Exception as ex:
+        except Exception:
                 traceback.print_exc()       
 
     def __repr__(self):
