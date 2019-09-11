@@ -6,10 +6,10 @@ returns a device instance using node data from an insteon device, None if unable
 
 '''
 
+from .device_insteon_contact import Device_Insteon_Contact
 from .device_insteon_dimmer import Device_Insteon_Dimmer
 from .device_insteon_switch import Device_Insteon_Switch
 from .device_insteon_fan import Device_Insteon_Fan
-from .device_insteon_contact import Device_Insteon_Contact
 from .device_insteon_controller import Device_Insteon_Controller
 from .device_insteon_templinc import Device_Insteon_TempLinc
 
@@ -53,7 +53,7 @@ def get_insteon_device_class (device_info):
     if device_info.category in insteon_device_classes:
         device_class = insteon_device_classes [device_info.category]
         return device_class
-        
+
 '''        
     if device_info.category in dev_cat_sub_cat and device_info.sub_category in dev_cat_sub_cat [device_info.category]:
         device_class = dev_cat_sub_cat [device_info.category] [device_info.sub_category]

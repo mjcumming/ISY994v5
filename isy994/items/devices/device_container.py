@@ -5,8 +5,8 @@ import traceback
 
 from ..item_container import Item_Container
 from .device_info import Device_Info
-from .insteon_device_manager import get_insteon_device_class
-from .zwave_device_manager import get_zwave_device_class
+from .insteon.insteon_device_manager import get_insteon_device_class
+from .zwave.zwave_device_manager import get_zwave_device_class
 
 import logging
 logger = logging.getLogger(__name__)

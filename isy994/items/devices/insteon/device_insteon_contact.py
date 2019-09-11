@@ -1,9 +1,9 @@
 #! /usr/bin/env python
 
 
-from .device_contact import Device_Contact
+from ..device_contact import Device_Contact
 from .device_insteon_base import Device_Insteon_Base
-
+ 
 
 class Device_Insteon_Contact(Device_Contact,Device_Insteon_Base):
 
