@@ -20,4 +20,4 @@ class Device_ZWave_Power(Device_Power,Device_ZWave_Base):
 
     def process_websocket_event(self,event):
             if event.control == 'ST':
-                self.set_property('power'event.action)
+                self.set_property('power',event.action)
