@@ -16,6 +16,11 @@ class Device_Thermostat(Device_Base):
         self.add_property('heatsetpoint',0) 
         self.add_property('mode','') 
 
-    def set_level(self,level):
+    def set_mode (self,mode):
         pass
-
+ 
+    def set_heatsetpoint (self,setpoint):
+        pass
+ 
+    def set_coolsetpoint (self,setpoint):
+        pass
