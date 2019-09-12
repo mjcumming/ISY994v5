@@ -17,4 +17,4 @@ class Device_ZWave_Controller(Device_Base,Device_ZWave_Base):
 
     def process_websocket_event(self,event):
         if event.control in paddle_events: 
-            self.set_property('paddle_action',event.control,True)
+            self.set_property('paddle_action',event.control,True) 

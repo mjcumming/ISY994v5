@@ -6,7 +6,7 @@ Base Device
 
 Common to all elements returned from rest/nodes/devices
 
-device_type = switch,dimmer,contact
+device_type = switch,dimmer,contact,...
 
 '''
 
