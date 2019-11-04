@@ -11,8 +11,8 @@ class Device_Lock(Device_Base):
         Device_Base.__init__(self,container,'lock', name, address)
 
         self.add_property('batterylevel',0) 
-        self.add_property('doorlock',0) 
+        self.add_property('lock',0) 
         self.add_property('usernumber',0) 
 
-    def set_lock (self,doorlock):
+    def set_lock (self,lock):
         pass
