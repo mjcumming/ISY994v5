@@ -13,7 +13,7 @@ from .device_zwave_power import Device_ZWave_Power
  
 
 zwave_device_classes = {
-    '111' : Device_Zwave_Lock,
+    '111' : Device_ZWave_Lock,
     # '118' : Device_ZWave_MultilevelSensor,
     '121' : Device_ZWave_GenericRspCtl,
     # '140' : Device_ZWave_Thermostat,
