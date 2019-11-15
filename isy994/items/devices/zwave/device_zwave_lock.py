@@ -10,26 +10,14 @@ class Device_ZWave_Lock(Device_Lock,Device_ZWave_Base):
         Device_Lock.__init__(self,container,device_info.name,device_info.address)
         Device_ZWave_Base.__init__(self,device_info)
 
-        if device_info.properties ['ST']:
-            for item in device_info.properties ['ST']:
-                if item [0] == 'value':          
-                    self.set_property('lock',int(item[1]))
-        
-        if device_info.properties ['BATLVL']:
-            for item in device_info.properties ['BATLVL']:
-                if item [0] == 'value':          
-                    self.set_property('batterylevel',int (item[1]))
-
-        if device_info.properties ['ERR']:
-            for item in device_info.properties ['ERR']:
-                if item [0] == 'value':          
-                    self.set_property('error',int(item[1]))
-
-        if device_info.properties ['USRNUM']:
-            for item in device_info.properties ['USRNUM']:
-                if item [0] == 'value':          
-                    self.set_property('usernumber',int(item[1]))
-
+        if device_info.property_value:
+            try:
+                if int(device_info.property_value) > 0:
+                    self.set_property('lock','1')
+                else:
+                    self.set_property('lock','0')
+            except:
+                pass 
 
     def process_websocket_event(self,event):
 
