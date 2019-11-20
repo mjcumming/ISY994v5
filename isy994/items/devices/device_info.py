@@ -100,7 +100,7 @@ class Device_Info(object):
                 self.property_prec = property_node.attrib['prec']
             else:
                 self.property_prec = None   
-                                             
+
             self.devtype_cat = None
             devtype_node = node.find('devtype')
             if devtype_node is not None:
