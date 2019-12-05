@@ -13,16 +13,17 @@ class Device_ZWave_Lock(Device_Lock,Device_ZWave_Base):
         if device_info.property_value:
             try:
                 if int(device_info.property_value) > 0:
-                    self.set_property('lock','1')
+                    self.set_property('state','Locked')
                 else:
-                    self.set_property('lock','0')
+                    self.set_property('state','Unlocked')
             except:
                 pass 
 
     def process_websocket_event(self,event):
 
         if event.control == 'ST':
-            self.set_property('lock',int(event.action))
+            state_map = {0:'Unlocked', 100:'Locked'}
+            self.set_property('state',state_map[int(event.action)])
         elif event.control == 'BATLVL':
             self.set_property('batterylevel',int(event.action))
         elif event.control == 'ERR':
@@ -31,6 +32,10 @@ class Device_ZWave_Lock(Device_Lock,Device_ZWave_Base):
             self.set_property('usernumber',int(event.action))
 
 
-    def set_lock (self,mode):
-        path = ('nodes/' + self.address + '/cmd/DON/' + str(mode))
+    def lock (self):
+        path = ('nodes/' + self.address + '/cmd/SECMD/1')
+        return self.send_request(path)
+
+    def unlock (self):
+        path = ('nodes/' + self.address + '/cmd/SECMD/0')
         return self.send_request(path)
