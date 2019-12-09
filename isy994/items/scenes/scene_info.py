@@ -1,9 +1,12 @@
 #! /usr/bin/env python
 
 import traceback
+import logging
 
 # process a node and assemble the info to build a scene, 
 # currently only processes scenes with a flag of 132
+
+logger = logging.getLogger(__name__)
 
 class Scene_Info(object):
 
@@ -24,7 +27,8 @@ class Scene_Info(object):
 
             self.family = group.find('family').text
 
-            if self.flag == '12': # all scene
+            if self.flag == '12': # ignore root scene
+                logger.info('ignoring root scene: {}'.format(self.name))
                 return 
            
             self.primary_node = group.find('pnode').text 
@@ -46,8 +50,7 @@ class Scene_Info(object):
 
         except Exception as ex:
                 #print ('scene info error',ex)
-                traceback.print_exc()               
+                traceback.print_exc()
 
     def __repr__(self):
         return 'Scene: Name {} Address {}, Family {}, Flag {}, Controllers {}, Responders {}'.format(self.name,self.address,self.family,self.flag,self.controllers,self.responders)
-    
