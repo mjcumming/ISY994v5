@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 
-from ..device_fan import Device_Fan
+from ..common.device_fan import Device_Fan
 from .device_insteon_base import Device_Insteon_Base
 
 speeds=['off','low','medium','high']

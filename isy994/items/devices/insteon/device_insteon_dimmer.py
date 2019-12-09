@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 
-from ..device_dimmer import Device_Dimmer
+from ..common.device_dimmer import Device_Dimmer
 from .device_insteon_base import Device_Insteon_Base
 
 paddle_events = {'DON','DOF','DIM','BRT','DFON','DFOF'}

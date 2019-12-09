@@ -2,7 +2,7 @@
 
 
 
-from ..device_base import Device_Base
+from ..common.device_base import Device_Base
 from .device_insteon_base import Device_Insteon_Base
 
 paddle_events = {'DON','DOF','DIM','BRT','DFON','DFOF'}

@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 
-from ..device_thermostat import Device_Thermostat
+from ..common.device_thermostat import Device_Thermostat
 from .device_insteon_base import Device_Insteon_Base
 
 MODES = ['off','heat','cool','auto']

@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 
-from ..device_switch import Device_Switch
+from ..common.device_switch import Device_Switch
 from .device_insteon_base import Device_Insteon_Base
 
 paddle_events = {'DON','DOF','DIM','BRT','DFON','DFOF'}

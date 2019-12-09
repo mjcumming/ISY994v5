@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 
-from ..device_lock import Device_Lock
+from ..common.device_lock import Device_Lock
 from .device_zwave_base import Device_ZWave_Base
 
 class Device_ZWave_Lock(Device_Lock,Device_ZWave_Base):

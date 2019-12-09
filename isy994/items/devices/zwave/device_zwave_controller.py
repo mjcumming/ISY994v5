@@ -2,7 +2,7 @@
 
 
 
-from ..device_base import Device_Base
+from ..common.device_base import Device_Base
 from .device_zwave_base import Device_ZWave_Base
 
 paddle_events = {'DON','DOF','DIM','BRT','DFON','DFOF'}

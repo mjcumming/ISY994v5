@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 
-from ..device_power import Device_Power
+from ..common.device_power import Device_Power
 from .device_zwave_base import Device_ZWave_Base
 
 class Device_ZWave_Power(Device_Power,Device_ZWave_Base):

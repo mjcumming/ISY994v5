@@ -11,7 +11,7 @@ device_type = switch,dimmer,contact,...
 '''
 
 
-from .. item_base import Item_Base
+from ... item_base import Item_Base
 
 
 class Device_Base(Item_Base):
