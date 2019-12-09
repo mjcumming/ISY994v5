@@ -62,8 +62,8 @@ class Device_Container (Item_Container):
                     self.add(device,device.address)
                 else:
                     logger.warn('No device class for {}'.format(device_info))
+                    
             elif device_info.family == '4': #z-wave devices
-                print(device_info)
                 device_class = get_zwave_device_class(device_info)
                 if device_class is not None:
                     device = device_class(self, device_info)

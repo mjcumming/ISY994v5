@@ -12,8 +12,9 @@ class Device_Insteon_Fan(Device_Fan,Device_Insteon_Base):
         Device_Fan.__init__(self,container,device_info.name,device_info.address,speeds)
         Device_Insteon_Base.__init__(self,device_info)
 
-        if device_info.property_value:
-            self.set_property ('speed',self.level_to_speed(int(device_info.property_value)))
+        value = device_info.get_property('ST','value')
+        if value:
+            self.set_property ('speed',self.level_to_speed(int(value)))
 
     def process_websocket_event(self,event):
             if event.control == 'ST':

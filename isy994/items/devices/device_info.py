@@ -80,26 +80,11 @@ class Device_Info(object):
 
             for node_property in node.iter('property'):
                 id = node_property.attrib ['id']
-                self.properties [id] = node_property.items()
-
-            # this to be removed, need to move to using the properties dictionary above
-            property_node = node.find('property')
-            if 'value' in property_node.attrib:
-                self.property_value = property_node.attrib['value']
-            else:
-                self.property_value = None
-            if 'formatted' in property_node.attrib:
-                self.property_format = property_node.attrib['formatted']
-            else:
-                self.property_format = None
-            if 'uofm' in property_node.attrib:
-                self.property_uofm = property_node.attrib['uofm']
-            else:
-                self.property_uofm = None
-            if 'prec' in property_node.attrib:
-                self.property_prec = property_node.attrib['prec']
-            else:
-                self.property_prec = None   
+                property_ = {}
+                for key,value in node_property.items():
+                    if key != 'id':
+                        property_ [key] = value
+                self.properties [id] = property_
 
             self.devtype_cat = None
             devtype_node = node.find('devtype')
@@ -114,6 +99,12 @@ class Device_Info(object):
 
         except Exception:
                 traceback.print_exc()       
+
+    def get_property (self,node,key):
+        if node in self.properties:
+            if key in self.properties [node]:
+                return self.properties [node] [key]
+        return None
 
     def __repr__(self):
         return 'Device: Name {} Address {}, Family {}, Type {}, DevCat {}, Def ID {}'.format(self.name,self.address,

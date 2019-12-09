@@ -22,46 +22,40 @@ class Device_Insteon_TempLinc(Device_Thermostat,Device_Insteon_Base):
         self.heatsetpoint_address = ' '.join(heatsetpoint_address_parts)
 
         #print ('device properties {}'.format(device_info.properties))
-
-        if device_info.properties ['ST']:
-            for item in device_info.properties ['ST']:
-                if item [0] == 'value':   
-                    try:       
-                        self.set_property('temperature',round(float(item[1])/2,0))
-                    except:
-                        self.set_property('temperature',0)
+        value = device_info.get_property('ST','value')
+        if value:
+            try:       
+                self.set_property('temperature',round(float(value)/2,0))
+            except:
+                self.set_property('temperature',0)
         
-        if device_info.properties ['CLIMD']:
-            for item in device_info.properties ['CLIMD']:
-                if item [0] == 'value':          
-                    try:
-                        self.set_property('mode',MODES [float(item[1])])
-                    except:
-                        self.set_property('mode',0)
+        value = device_info.get_property('CLIMD','value')
+        if value:
+            try:
+                self.set_property('mode',MODES [float(value)])
+            except:
+                self.set_property('mode',0)
 
-        if device_info.properties ['CLISPH']:
-            for item in device_info.properties ['CLISPH']:
-                if item [0] == 'value':          
-                    try:
-                        self.set_property('heatsetpoint',round(float(item[1])/2,0))
-                    except:
-                        self.set_property('heatsetpoint',0)
+        value = device_info.get_property('CLISPH','value')
+        if value:
+            try:
+                self.set_property('heatsetpoint',round(float(value)/2,0))
+            except:
+                self.set_property('heatsetpoint',0)
 
-        if device_info.properties ['CLISPC']:
-            for item in device_info.properties ['CLISPC']:
-                if item [0] == 'value':          
-                    try:
-                        self.set_property('coolsetpoint',round(float(item[1])/2,0))
-                    except:
-                        self.set_property('coolsetpoint',0)
+        value = device_info.get_property('CLISPC','value')
+        if value: 
+            try:
+                self.set_property('coolsetpoint',round(float(value)/2,0))
+            except:
+                self.set_property('coolsetpoint',0)
 
-        if device_info.properties ['CLIHUM']:
-            for item in device_info.properties ['CLIHUM']:
-                if item [0] == 'value':          
-                    try:
-                        self.set_property('humidity',round(float(item[1]),0))
-                    except:
-                        self.set_property('humidity',0)
+        value = device_info.get_property('CLIHUM','value')
+        if value:
+            try:
+                self.set_property('humidity',round(float(value),0))
+            except:
+                self.set_property('humidity',0)
 
 
     def process_websocket_event(self,event):

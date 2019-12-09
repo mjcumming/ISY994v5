@@ -10,9 +10,10 @@ class Device_ZWave_Lock(Device_Lock,Device_ZWave_Base):
         Device_Lock.__init__(self,container,device_info.name,device_info.address)
         Device_ZWave_Base.__init__(self,device_info)
 
-        if device_info.property_value:
+        value = device_info.get_property('ST','value')
+        if value:
             try:
-                if int(device_info.property_value) > 0:
+                if int(value) > 0:
                     self.set_property('state','Locked')
                 else:
                     self.set_property('state','Unlocked')

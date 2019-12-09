@@ -11,12 +11,14 @@ class Device_Insteon_Dimmer(Device_Dimmer,Device_Insteon_Base):
     def __init__(self, container, device_info):
         Device_Dimmer.__init__(self,container,device_info.name,device_info.address)
         Device_Insteon_Base.__init__(self, device_info)
+        #print(device_info)
 
         self.add_property('paddle_action')
         
-        if device_info.property_value:        
+        value = device_info.get_property('ST','value')
+        if value:
             try:
-                self.properties ['level'] = int(int(device_info.property_value)/255*100)
+                self.properties ['level'] = int(int(value)/255*100)
             except:
                 pass
 

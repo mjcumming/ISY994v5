@@ -11,9 +11,10 @@ class Device_Insteon_Contact(Device_Contact,Device_Insteon_Base):
         Device_Contact.__init__(self,container,device_info.name,device_info.address)
         Device_Insteon_Base.__init__(self, device_info)
 
-        if device_info.property_value:
+        value = device_info.get_property('ST','value')
+        if value:
             try:
-                if int(device_info.property_value) > 0:
+                if int(value) > 0:
                     self.set_property('contact','open')
                 else:
                     self.set_property('contact','closed')

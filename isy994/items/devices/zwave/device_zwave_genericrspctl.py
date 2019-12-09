@@ -14,9 +14,10 @@ class Device_ZWave_GenericRspCtl(Device_Switch,Device_ZWave_Base):
 
         self.add_property('paddle_action')
 
-        if device_info.property_value:
+        value = device_info.get_property('ST','value')
+        if value:
             try:
-                if int(device_info.property_value) > 0:
+                if int(value) > 0:
                     self.set_property('onoff','on')
                 else:
                     self.set_property('onoff','off')
