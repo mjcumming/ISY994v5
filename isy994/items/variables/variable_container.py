@@ -20,34 +20,25 @@ class Variable_Container (Item_Container):
     def __init__(self, controller):
         Item_Container.__init__(self,controller,'Variable')
 
+    def get_list(self, request_string):
+        success, response = self.controller.send_request(request_string)
+        if not success or response.status_code != 200:
+            raise Exception('no response for request: ', request_string)
+        return ET.fromstring(response.content)
+
+    def get_and_process(self, var_type):
+        try:
+            vars_list = self.get_list('/vars/get/' + var_type)
+            self.process_variable_nodes(vars_list, vars_list)
+            defs_list = self.get_list('/vars/definitions/' + var_type)
+            self.process_variable_nodes(vars_list, defs_list)
+        except Exception as error:
+            logger.warning('no variables found of type {}: {}'.format(var_type, error))
+        
     def start(self):
         success = True
-
-        success_list,variable_list_response = self.controller.send_request('vars/get/1') # get integer vars
-        success_name,variable_name_response = self.controller.send_request('vars/definitions/1') # get integer vars
-
-        if success_list and success_name and variable_list_response.status_code == 200 and variable_name_response.status_code == 200:
-            list_root = ET.fromstring (variable_list_response.content)        
-            name_root = ET.fromstring (variable_name_response.content)        
-            self.process_variable_nodes (list_root,name_root)       
-        else:
-            success = False
-
-        success_list,variable_list_response = self.controller.send_request('vars/get/2') # get state vars
-        success_name,variable_name_response = self.controller.send_request('vars/definitions/2') # get state vars
-
-        if success_list and success_name and variable_list_response.status_code == 200 and variable_name_response.status_code == 200:
-            list_root = ET.fromstring (variable_list_response.content)        
-            name_root = ET.fromstring (variable_name_response.content)        
-            self.process_variable_nodes (list_root,name_root)       
-        else:
-            success = False
-
-        if success:
-            self.items_retrieved = True
-            return True
-        else:
-            return False
+        self.get_and_process('1')  # integer variables
+        self.get_and_process('2')  # state variables
 
     def process_variable_nodes(self,list_root,name_root):
         for node in list_root.iter('var'):
