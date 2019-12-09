@@ -69,7 +69,7 @@ class Device_Insteon_TempLinc(Device_Thermostat,Device_Insteon_Base):
         elif event.control == 'CLIHUM':
             self.set_property('humidity',round(float(event.action),0))
         elif event.control == 'CLIMD':
-            self.set_property('mode',MODES[float(event.action)])
+            self.set_property('mode',MODES[int(event.action)])
 
     def set_mode (self,mode):
         path = ('nodes/' + self.address + '/cmd/DON/' + str(mode))
