@@ -41,12 +41,11 @@ class Controller(object):
         self.port = port
         self.username = username
         self.password = password
+        self.use_https= use_https
 
         self.event_handlers = []
         if event_handler is not None:
             self.event_handlers.append(event_handler)
-
-        self.http_client = HTTP_Client (address,port,username,password,use_https)
 
         self.controller_container = Controller_Container(self)
         self.device_container = Device_Container(self)
@@ -64,6 +63,23 @@ class Controller(object):
         self.watch_dog_timer.add_callback(self.watch_dog_check)
 
     def start(self):
+        self.http_client = HTTP_Client (self.address,self.port,self.username,self.password,self.use_https)
+
+        if self.get_controller_items () is True:
+            self.process_controller_event('status','ready')
+            self.connect_websocket()
+        else:
+            self.process_controller_event('status','error')
+            self.retry_start(10)
+
+    def retry_start(self,delay_seconds):
+        def restart ():
+            self.start()
+
+        self.restart_timer = threading.Timer(delay_seconds, restart) 
+        self.restart_timer.start()
+        
+    def get_controller_items(self):
         success = True
         self.process_controller_event('status','init')        
 
@@ -78,26 +94,16 @@ class Controller(object):
         if self.variable_container.items_retrieved is False:
             if self.variable_container.start() is False:
                 success = False 
-
         
         if self.program_container.items_retrieved is False:
             if self.program_container.start() is False:
                 success = False
         
-        if success:
-            self.process_controller_event('status','ready')
-            self.websocket_client = Websocket_Client(self,self.address,self.port,self.username,self.password,False)
-        else:
-            self.process_controller_event('status','error')
-            self.retry_start(10)
+        return success
 
-    def retry_start(self,delay_seconds):
-        def restart ():
-            self.start()
+    def connect_websocket(self):
+        self.websocket_client = Websocket_Client(self,self.address,self.port,self.username,self.password,False)
 
-        self.restart_timer = threading.Timer(delay_seconds, restart) 
-        self.restart_timer.start()
-        
     def container_event(self,container,item,event,*args):
         #print ('Event {} from .{}: {} {}'.format(item.name,container.container_type,item,args))
         self.publish_container_event(container,item,event,*args)
