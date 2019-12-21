@@ -36,10 +36,12 @@ class Variable_Container (Item_Container):
             logger.warning('no variables found of type {}: {}'.format(var_type, error))
         
     def start(self):
-        success = True
+        #success = True
         self.get_and_process('1')  # integer variables
         self.get_and_process('2')  # state variables
-
+        self.items_retrieved = True
+        return True
+    
     def process_variable_nodes(self,list_root,name_root):
         for node in list_root.iter('var'):
             variable_info = Variable_Info(node)
