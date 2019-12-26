@@ -14,7 +14,8 @@ class Device_Thermostat(Device_Base):
         self.add_property('humidity',0) 
         self.add_property('coolsetpoint',0) 
         self.add_property('heatsetpoint',0) 
-        self.add_property('mode','') 
+        self.add_property('systemmode',0) 
+        self.add_property('fanmode',0) 
 
     def set_mode (self,mode):
         pass
@@ -23,4 +24,7 @@ class Device_Thermostat(Device_Base):
         pass
  
     def set_coolsetpoint (self,setpoint):
+        pass
+
+    def set_fanmode (self,mode):
         pass

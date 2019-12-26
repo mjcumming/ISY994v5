@@ -32,9 +32,9 @@ class Device_Insteon_TempLinc(Device_Thermostat,Device_Insteon_Base):
         value = device_info.get_property('CLIMD','value')
         if value:
             try:
-                self.set_property('mode',MODES [int(value)])
+                self.set_property('systemmode',MODES [int(value)])
             except:
-                self.set_property('mode',0)
+                self.set_property('systemmode',0)
 
         value = device_info.get_property('CLISPH','value')
         if value:
