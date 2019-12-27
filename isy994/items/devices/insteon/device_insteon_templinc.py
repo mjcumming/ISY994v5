@@ -4,8 +4,13 @@
 from ..common.device_thermostat import Device_Thermostat
 from .device_insteon_base import Device_Insteon_Base
 
-MODES = ['off','heat','cool','auto']
+MODES = ['Off','Heat','Cool','Auto','Program Auto']
 
+FAN_MODES = {
+    0 : 'Off',
+    7 : 'On',
+    8 : 'Auto',
+}
 
 class Device_Insteon_TempLinc(Device_Thermostat,Device_Insteon_Base):
 
@@ -57,9 +62,14 @@ class Device_Insteon_TempLinc(Device_Thermostat,Device_Insteon_Base):
             except:
                 self.set_property('humidity',0)
 
+        value = device_info.get_property('CLIFS','value')
+        if value:
+            try:
+                self.set_property('fanmode',FAN_MODES [int(value)])
+            except:
+                self.set_property('humidity',0)
 
     def process_websocket_event(self,event):
-
         if event.control == 'ST':
             self.set_property('temperature',round(float(event.action)/2,0))
         elif event.control == 'CLISPH':
@@ -69,7 +79,9 @@ class Device_Insteon_TempLinc(Device_Thermostat,Device_Insteon_Base):
         elif event.control == 'CLIHUM':
             self.set_property('humidity',round(float(event.action),0))
         elif event.control == 'CLIMD':
-            self.set_property('mode',MODES[int(event.action)])
+            self.set_property('systemmode',MODES[int(event.action)])
+        elif event.control == 'CLIFS':
+            self.set_property('fanmode',FAN_MODES[int(event.action)])
 
     def set_mode (self,mode):
         path = ('nodes/' + self.address + '/cmd/DON/' + str(mode))

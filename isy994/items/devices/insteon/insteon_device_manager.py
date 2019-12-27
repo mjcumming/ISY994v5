@@ -37,7 +37,7 @@ def get_insteon_device_class (device_info):
     if device_info.category == '1' and device_info.sub_category == '46' and device_info.address_parts [3] == '2': # fanlinc motor
         return Device_Insteon_Fan
 
-    if device_info.category == '5' and device_info.sub_category == '10' and device_info.address_parts [3] == '1': # fanlinc motor
+    if device_info.category == '5' and device_info.sub_category == '10' and device_info.address_parts [3] == '1': # temp linc
         return Device_Insteon_TempLinc
 
     if device_info.category == '7' and device_info.sub_category == '0' and device_info.address_parts [3] == '1': # IOLinc sensor
