@@ -15,7 +15,7 @@ def isy_event_handler(container,item,event,*args):
 
     if container.container_type == 'Device' and event == 'add' and item.address == dimmer_address:
         global dimmer
-       # dimmer = item
+        dimmer = item
 
 
 try:

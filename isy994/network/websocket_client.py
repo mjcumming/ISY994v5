@@ -86,6 +86,7 @@ class Websocket_Client(object):
     def _on_close(self,ws):
         logger.info('Websocket Disonnected')
         self.connected = False
+        time.sleep(10)
         self.connect()
 
 
