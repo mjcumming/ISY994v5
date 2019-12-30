@@ -15,15 +15,18 @@ class HTTP_Client(object):
         url = (use_https and 'https://' or 'http://') + self._address + '/rest/'  
         # add port...
         self._url = url
+        self.session = None
 
-    async def go(self):
+    async def get_session(self):
         async with aiohttp.ClientSession(
                 auth=aiohttp.BasicAuth('admin', 'admin')) as self.session:
             await self.fetch()
 
-    async def fetch(self):
-        async with self.session.get(
-                'http://192.168.1.51/rest/nodes') as resp:
+    async def request(self,path):
+        if not self.session is None:
+            self.get_session()
+
+        async with self.session.get(self._url + path) as resp:
             print(resp.status)
             body = await resp.text()
             print(body)
@@ -33,4 +36,4 @@ http = HTTP_Client('192.168.1.51')
 
 
 loop = asyncio.get_event_loop()
-loop.run_until_complete(http.go())
+loop.run_until_complete(http.request('nodes'))
