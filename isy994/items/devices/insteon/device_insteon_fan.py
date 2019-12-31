@@ -28,7 +28,7 @@ class Device_Insteon_Fan(Device_Fan,Device_Insteon_Base):
     def level_to_speed(self,level):
         if level == 0:
             return'off'
-        elif level > 0 and level <= 63:
+        elif level > 0 and level <= 64:
             return 'low'
         elif level >= 50 and level <= 191:
            return 'medium'
