@@ -54,6 +54,7 @@ class Controller(object):
         self.program_container = Program_Container(self)
 
         self.last_heartbeat = None
+        self.heartbeat_interval = 30 # set below by data from controller, needed her for watchdog if no initial connection
 
         self.controller_container.start()        
         

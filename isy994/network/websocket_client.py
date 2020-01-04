@@ -30,6 +30,7 @@ class Websocket_Client(object):
             "Origin: com.universal-devices.websockets.isy"
         ]
 
+        self._ws_thread = None
         self._connected = False
         self.connect()
     
@@ -53,11 +54,12 @@ class Websocket_Client(object):
             on_close = lambda ws : self._on_close (ws),
         )
         
-        self._ws_thread = threading.Thread(
-            target=self._ws.run_forever, args=())
-            
-        self._ws_thread.daemon = True
-        self._ws_thread.start()
+        if self._ws_thread is None:
+            self._ws_thread = threading.Thread(
+                target=self._ws.run_forever, args=())
+                
+            self._ws_thread.daemon = True
+            self._ws_thread.start()
         
     def _on_open(self,ws):
         logger.info('Connected')
