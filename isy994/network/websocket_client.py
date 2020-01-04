@@ -10,7 +10,7 @@ import time
 
 import xml.etree.ElementTree as ET
 
-from .websocket_event import Websocket_Event
+from websocket_event import Websocket_Event
 
 logger = logging.getLogger(__name__)
 
@@ -53,10 +53,20 @@ class Websocket_Client(object):
             on_error = lambda ws,err : self._on_error (ws,err),
             on_close = lambda ws : self._on_close (ws),
         )
+
+        def stay_connected():
+            while True:
+                try:
+                    self._ws.run_forever()
+                except:
+                    pass
+                
+                time.sleep(10)
+
         
         if self._ws_thread is None:
             self._ws_thread = threading.Thread(
-                target=self._ws.run_forever, args=())
+                target=stay_connected, args=())
                 
             self._ws_thread.daemon = True
             self._ws_thread.start()
@@ -67,7 +77,7 @@ class Websocket_Client(object):
 
     def _on_message(self,ws, message):
         logger.debug('Websocket Message: {}'.format(message))
-        #print('Websocket Message: {}'.format(message))
+        print('Websocket Message: {}'.format(message))
 
         try:
             event_node = ET.fromstring (message)        
@@ -86,10 +96,10 @@ class Websocket_Client(object):
         logger.error('Websocket Error: {}'.format(error))
 
     def _on_close(self,ws):
-        logger.info('Websocket Disonnected')
+        logger.warning('Websocket Disonnected')
         self.connected = False
-        time.sleep(10)
-        self.connect()
+        #time.sleep(10)
+        #self.connect()
 
 
 
@@ -98,7 +108,7 @@ if __name__ == "__main__":
     websocket.enableTrace(True)
 
     try:
-        wsc = Websocket_Client(False,"192.168.1.213",80,'admin','admin',False)
+        wsc = Websocket_Client(False,"192.168.1.51",80,'admin','admin',False)
 
         while True:
             time.sleep(2)
