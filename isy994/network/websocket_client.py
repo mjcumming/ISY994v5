@@ -10,7 +10,7 @@ import time
 
 import xml.etree.ElementTree as ET
 
-from websocket_event import Websocket_Event
+from .websocket_event import Websocket_Event
 
 logger = logging.getLogger(__name__)
 
