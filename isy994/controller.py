@@ -56,6 +56,8 @@ class Controller(object):
         self.last_heartbeat = None
         self.heartbeat_interval = 30 # set below by data from controller, needed her for watchdog if no initial connection
 
+        self.websocket_client = None
+
         self.controller_container.start()        
         
         self.start()
@@ -103,7 +105,8 @@ class Controller(object):
         return success
 
     def connect_websocket(self):
-        self.websocket_client = Websocket_Client(self,self.address,self.port,self.username,self.password,False)
+        if self.websocket_client is None:
+            self.websocket_client = Websocket_Client(self,self.address,self.port,self.username,self.password,False)
 
     def container_event(self,container,item,event,*args):
         #print ('Event {} from .{}: {} {}'.format(item.name,container.container_type,item,args))
