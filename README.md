@@ -6,17 +6,24 @@ Provides a common interface to all devices, variables, programs, and scenes on a
 
 After connecting to the ISY, the 4 types (device, scenes, programs, and variables) of items on the ISY are enumerated. The event handler generates 'add' events are items are discovered. Each item has properties that generate 'property' events as they are changed. 
 
-Currently supports Insteon dimmers, switches, keypadlincs, fanlincs, and contact devices. 
+Currently supports 
+    Insteon dimmers, switches, keypadlincs, fanlincs, templinc and contact devices
+    ZWave locks and switches
+    ISY Scenes
+    ISY Programs
+    ISY Variables
 
-Designed to be easy to expand support to other device types and technologies such as zWave.
+All item/node types (device,scene,program,variable) are retrieved and updated via websockets. No polling.
 
-Requires 5.xx firmware. Tested against 5.12
+Each device has a common base class so that the user does not need to aware of the technology (Insteon/zWave etc) to use that device
+
+Designed to be easy to expand support to other ISY device types and technologies such as zWave.
+
+Requires 5.xx firmware. Tested against 5.16. Requires chunk mode to be OFF
 
 An event handler is supplied when the controller is started. All device events (add, remove, property) can be captured through the event handler for processing as needed.
 
-This library is used in [IYS994-Homie-Bridge](https://pypi.org/project/ISY994-Homie3-Bridge/), an MQTT Client to serve ISY devices to a MQTT broker using the [Homie 3](https://homieiot.github.io/) protocol.
-
-Supports Insteon switch, dimmers, contact, and templinc devices and scenes
+This library is used in [IYS994-Homie-Bridge](https://pypi.org/project/ISY994-Homie3-Bridge/), an MQTT Client to serve ISY devices to a MQTT broker using the [Homie 3/4](https://homieiot.github.io/) protocol.
 
 
 
@@ -59,6 +66,5 @@ except KeyboardInterrupt:
     print("KeyboardInterrupt has been caught.")
 ~~~~
 
-This package requires further development and testing.
 
 
