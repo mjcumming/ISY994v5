@@ -59,17 +59,24 @@ class Websocket_Client(object):
                 try:
                     self._ws.run_forever()
                 except:
-                    pass
+                    logger.error ('Failed to start websocket thread')
+                finally:
+                    logger.warn ('WS runforever stopped')
                 
-                time.sleep(10)
+                self.connected = False
 
+                #self._ws_thread = None
+                #self.connect()
         
-        if self._ws_thread is None:
+        if self._ws_thread is None or self._ws_thread.isAlive is False:
+            logger.warning ('Starting websocket thread')
             self._ws_thread = threading.Thread(
                 target=stay_connected, args=())
                 
             self._ws_thread.daemon = True
             self._ws_thread.start()
+        else:
+            logger.warning ('NOT starting websocket thread')
         
     def _on_open(self,ws):
         logger.info('Connected')
@@ -98,8 +105,8 @@ class Websocket_Client(object):
     def _on_close(self,ws):
         logger.warning('Websocket Disonnected')
         self.connected = False
-        #time.sleep(10)
-        #self.connect()
+        time.sleep(10)
+        self.connect()
 
 
 
