@@ -45,17 +45,19 @@ class Websocket_Client(object):
             self.controller.websocket_connected(connected)
 
     def connect(self):
-        self._ws = websocket.WebSocketApp(
-            "ws://"+self._address+"/rest/subscribe",
-            header=self._headers,
-            on_open = lambda ws : self._on_open (ws),
-            on_message = lambda ws,message : self._on_message (ws,message),
-            on_error = lambda ws,err : self._on_error (ws,err),
-            on_close = lambda ws : self._on_close (ws),
-        )
-
         def stay_connected():
             while True:
+                logger.warn ('Opening Websocket')
+
+                self._ws = websocket.WebSocketApp(
+                    "ws://"+self._address+"/rest/subscribe",
+                    header=self._headers,
+                    on_open = lambda ws : self._on_open (ws),
+                    on_message = lambda ws,message : self._on_message (ws,message),
+                    on_error = lambda ws,err : self._on_error (ws,err),
+                    on_close = lambda ws : self._on_close (ws),
+                )
+
                 try:
                     self._ws.run_forever()
                 except:
@@ -64,9 +66,8 @@ class Websocket_Client(object):
                     logger.warn ('WS runforever stopped')
                 
                 self.connected = False
-
-                #self._ws_thread = None
-                #self.connect()
+                logger.warn ('Waiting to reopen Websocket')
+                time.sleep(5)
         
         if self._ws_thread is None or self._ws_thread.isAlive is False:
             logger.warning ('Starting websocket thread')
@@ -83,7 +84,7 @@ class Websocket_Client(object):
         self.connected = True
 
     def _on_message(self,ws, message):
-        logger.debug('Websocket Message: {}'.format(message))
+        logger.info('Websocket Message: {}'.format(message))
         print('Websocket Message: {}'.format(message))
 
         try:
@@ -105,8 +106,8 @@ class Websocket_Client(object):
     def _on_close(self,ws):
         logger.warning('Websocket Disonnected')
         self.connected = False
-        time.sleep(10)
-        self.connect()
+        #time.sleep(5)
+        #self.connect()
 
 
 

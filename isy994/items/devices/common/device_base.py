@@ -8,6 +8,8 @@ Common to all elements returned from rest/nodes/devices
 
 device_type = switch,dimmer,contact,...
 
+having a common device types eliminates the need to know the underlying technology being used
+
 '''
 
 

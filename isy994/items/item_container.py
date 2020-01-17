@@ -4,7 +4,9 @@
 
 container for a collection of items
 
-container_type = device, variable, program, scene
+container_type = device, variable, program, scene, controller
+
+publishes all item events back to the controller object
 
 '''
 

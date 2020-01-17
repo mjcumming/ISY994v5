@@ -2,12 +2,13 @@
 
 ''' 
 
-Base Device
+Base Item
 
 Common to all ISY items ie programs, variables, devices, scenes
 
 status property -> ready, alert, lost
 
+provides a common mechanism to subscribe to item property changes
 
 '''
 
