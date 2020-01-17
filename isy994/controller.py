@@ -179,4 +179,4 @@ class Controller(object):
         if self.last_heartbeat + timedelta (seconds=self.heartbeat_interval) < datetime.now():
             logger.warn('Watchdog timer triggered. Restarting')
             self.start()
-        self.websocket_client._ws.keep_running=False
+        #self.websocket_client._ws.keep_running=False
