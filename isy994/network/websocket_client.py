@@ -47,21 +47,21 @@ class Websocket_Client(object):
     def connect(self):
         def stay_connected():
             while True:
-                logger.warn ('Opening Websocket')
-
-                self._ws = websocket.WebSocketApp(
-                    "ws://"+self._address+"/rest/subscribe",
-                    header=self._headers,
-                    on_open = lambda ws : self._on_open (ws),
-                    on_message = lambda ws,message : self._on_message (ws,message),
-                    on_error = lambda ws,err : self._on_error (ws,err),
-                    on_close = lambda ws : self._on_close (ws),
-                )
-
                 try:
+                    logger.warn ('Opening Websocket')
+
+                    self._ws = websocket.WebSocketApp(
+                        "ws://"+self._address+"/rest/subscribe",
+                        header=self._headers,
+                        on_open = lambda ws : self._on_open (ws),
+                        on_message = lambda ws,message : self._on_message (ws,message),
+                        on_error = lambda ws,err : self._on_error (ws,err),
+                        on_close = lambda ws : self._on_close (ws),
+                    )
+
                     self._ws.run_forever()
                 except:
-                    logger.error ('Failed to start websocket thread')
+                    logger.error ('Failed to open Websocket')
                 finally:
                     logger.warn ('WS runforever stopped')
                 

@@ -19,6 +19,12 @@ from .network.discover import Discover
 from .support.repeating_timer import Repeating_Timer
 
 import logging
+import logging
+
+import os
+
+logging.basicConfig(level=logging.INFO,filename=os.path.expanduser("~") + '/isy994v5.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+
 logger = logging.getLogger(__name__)
 
 #event categores controller, device, scene, variable, program
