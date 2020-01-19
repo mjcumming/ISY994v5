@@ -23,10 +23,12 @@ class Repeating_Timer (object):
     def _target(self):
         while not self.event.wait(self._time):
             for callback in self.callbacks:
+                #print ('start')
                 try:
                     callback ()
                 except Exception as e:
-                    logger.warning ('Error in timer callback: {}'.format(e))
+                    logger.error ('Error in timer callback: {}'.format(e))
+                #print ('end')
 
     @property
     def _time(self):

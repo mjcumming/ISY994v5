@@ -23,9 +23,29 @@ import logging
 
 import os
 
-logging.basicConfig(level=logging.INFO,filename=os.path.expanduser("~") + '/isy994v5.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+#logging.basicConfig(level=logging.INFO,filename=os.path.expanduser("~") + '/isy994v5.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
 logger = logging.getLogger(__name__)
+
+import logging
+logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
+#logger = logging.getLogger()
+logger = logging.getLogger(__name__)
+
+
+logging.basicConfig(level=logging.DEBUG,filename=os.path.expanduser("~") + '/isy994v5.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+
+
+
+#print ("{0}\{1}.log".format(os.path.expanduser("~"), 'isy994v5'))
+
+fileHandler = logging.FileHandler("{0}/{1}.log".format(os.path.expanduser("~"), 'isy994v5'))
+fileHandler.setFormatter(logFormatter)
+logger.addHandler(fileHandler)
+
+consoleHandler = logging.StreamHandler()
+consoleHandler.setFormatter(logFormatter)
+logger.addHandler(consoleHandler)
 
 #event categores controller, device, scene, variable, program
 
@@ -59,7 +79,7 @@ class Controller(object):
         self.variable_container = Variable_Container(self)
         self.program_container = Program_Container(self)
 
-        self.last_heartbeat = None
+        self.last_heartbeat = datetime.now()
         self.heartbeat_interval = 30 # set below by data from controller, needed her for watchdog if no initial connection
 
         self.websocket_client = None
@@ -72,6 +92,8 @@ class Controller(object):
         self.watch_dog_timer.add_callback(self.watch_dog_check)
 
     def start(self):
+        self.process_controller_event('status','init')        
+
         self.http_client = HTTP_Client (self.address,self.port,self.username,self.password,self.use_https)
 
         if self.get_controller_items () is True:
@@ -90,7 +112,6 @@ class Controller(object):
         
     def get_controller_items(self):
         success = True
-        self.process_controller_event('status','init')        
 
         if self.device_container.items_retrieved is False:
             if self.device_container.start() is False:
@@ -107,6 +128,10 @@ class Controller(object):
         if self.program_container.items_retrieved is False:
             if self.program_container.start() is False:
                 success = False
+        
+        succ,resp =self.send_request('time')
+        if succ is not True:
+            success = False
         
         return success
 
@@ -182,7 +207,24 @@ class Controller(object):
             self.process_controller_event('state','busy')
 
     def watch_dog_check(self):
+        #controller = self.controller_container.get('controller')
+        #print ('start watch dog!!!{}  {}   {}   {}'.format(self.last_heartbeat,self.heartbeat_interval,self.last_heartbeat + timedelta (seconds=self.heartbeat_interval),datetime.now()))
+
         if self.last_heartbeat + timedelta (seconds=self.heartbeat_interval) < datetime.now():
             logger.warn('Watchdog timer triggered. Restarting')
+            #controller.state = 'lost'
+            
+            if self.websocket_client is not None:
+                self.websocket_client.connect()
+                #self.websocket_client = None
+                #self.websocket_connected (False)
+                
             self.start()
+
+        #print ('end watch dog!!!')
+
+#            self.connect_websocket()
+
+        #elif controller.state != 'ready':
+        #    controller.state = 'ready'
         #self.websocket_client._ws.keep_running=False

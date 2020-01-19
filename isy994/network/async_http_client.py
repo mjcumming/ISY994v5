@@ -23,7 +23,7 @@ class HTTP_Client(object):
             await self.fetch()
 
     async def request(self,path):
-        if not self.session is None:
+        if self.session is None:
             self.get_session()
 
         async with self.session.get(self._url + path) as resp:

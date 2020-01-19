@@ -13,6 +13,9 @@ import xml.etree.ElementTree as ET
 from .websocket_event import Websocket_Event
 
 logger = logging.getLogger(__name__)
+consoleHandler = logging.StreamHandler()
+
+websocket.enableTrace(True,handler=consoleHandler)
 
 class Websocket_Client(object):
 
@@ -32,8 +35,13 @@ class Websocket_Client(object):
 
         self._ws_thread = None
         self._connected = False
+        self.keep_connected = True
         self.connect()
-    
+
+    def close(self):
+        self._ws.keep_running=False
+        self.keep_connected=False
+            
     @property
     def connected(self):
         return self._connected
@@ -46,9 +54,9 @@ class Websocket_Client(object):
 
     def connect(self):
         def stay_connected():
-            while True:
+            while self.keep_connected:
                 try:
-                    logger.warn ('Opening Websocket')
+                    logger.warning ('Opening Websocket')
 
                     self._ws = websocket.WebSocketApp(
                         "ws://"+self._address+"/rest/subscribe",
@@ -60,14 +68,17 @@ class Websocket_Client(object):
                     )
 
                     self._ws.run_forever()
-                except:
-                    logger.error ('Failed to open Websocket')
+
+                except Exception as err:
+                    logger.error ('Failed to open Websocket {}'.format(err))
                 finally:
                     logger.warn ('WS runforever stopped')
                 
                 self.connected = False
-                logger.warn ('Waiting to reopen Websocket')
+                logger.warning ('Waiting to reopen Websocket')
                 time.sleep(5)
+
+            logger.warning ('Exiting stay connected')
         
         if self._ws_thread is None or self._ws_thread.isAlive is False:
             logger.warning ('Starting websocket thread')
