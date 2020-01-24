@@ -67,7 +67,7 @@ class Websocket_Client(object):
                         on_close = lambda ws : self._on_close (ws),
                     )
 
-                    self._ws.run_forever()
+                    self._ws.run_forever(ping_interval=30,ping_timeout=20)
 
                 except Exception as err:
                     logger.error ('Failed to open Websocket {}'.format(err))

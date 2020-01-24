@@ -13,7 +13,7 @@ from .items.programs.program_container import Program_Container
 from .items.controller.controller_container import Controller_Container 
 
 from .network.http_client import HTTP_Client
-from .network.websocket_client import Websocket_Client
+from .network.async_websocket_client import Websocket_Client
 from .network.discover import Discover
 
 from .support.repeating_timer import Repeating_Timer
@@ -33,7 +33,7 @@ logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelnam
 logger = logging.getLogger(__name__)
 
 
-logging.basicConfig(level=logging.DEBUG,filename=os.path.expanduser("~") + '/isy994v5.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+#logging.basicConfig(level=logging.DEBUG,filename=os.path.expanduser("~") + '/isy994v5.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
 
 
