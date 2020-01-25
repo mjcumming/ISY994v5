@@ -2,7 +2,7 @@ import asyncio
 
 import aiohttp
 #work in progress
-
+'''
 
 class HTTP_Client(object):
 
@@ -31,9 +31,26 @@ class HTTP_Client(object):
             body = await resp.text()
             print(body)
 
+'''
+#http = HTTP_Client('192.168.1.51')
 
-http = HTTP_Client('192.168.1.51')
+
+
+
+
+async def fetch(session):
+    async with session.get(
+            'http://192.168.1.52/rest/nodes',chunked=True) as resp:
+        print(resp.status)
+        body = await resp.text()
+        print(body)
+
+
+async def go():
+    async with aiohttp.ClientSession(
+            auth=aiohttp.BasicAuth('admin', 'admin')) as session:
+        await fetch(session)
 
 
 loop = asyncio.get_event_loop()
-loop.run_until_complete(http.request('nodes'))
+loop.run_until_complete(go())
