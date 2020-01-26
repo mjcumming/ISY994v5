@@ -109,8 +109,10 @@ class Websocket_Client(object):
                         elif msg.type == aiohttp.WSMsgType.CLOSE:
                             logger.warning('Close received')
                             await ws.close()
+
                         elif msg.type == aiohttp.WSMsgType.ERROR:
                             logger.error ('Error during receive {}'.format(ws.exception()))
+                            
                         elif msg.type == aiohttp.WSMsgType.CLOSED:
                             logger.warning ('Close {}'.format(ws.exception()))
                             await ws.close()

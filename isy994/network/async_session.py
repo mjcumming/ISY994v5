@@ -3,7 +3,7 @@
 import asyncio
 import aiohttp
 import threading
-from websocket_event import Websocket_Event
+from .websocket_event import Websocket_Event
 import xml.etree.ElementTree as ET
 import logging
 import time
@@ -15,25 +15,29 @@ ws_headers = {
 }
 
 
-class ISY_Session(object):
+class Async_Session(object):
 
-    def __init__(self,controller,address,port,username,password,https, **kwargs):
+    def __init__(self,controller,address,port,username,password,https=False,loop=False, **kwargs):
+        self.controller = controller
+
         self._address = address
         self._port = port
-        self.controller = controller
         self._https = https
-        self.auth = aiohttp.BasicAuth('admin','admin')
-        
+
+        self.loop=loop
+
         # set some default values
         self.reply_timeout = kwargs.get('heartbeat') or 30
         self.sleep_time = kwargs.get('sleep_time') or 10
 
         self._connected = False
-        self.session = None
-        
-        self.loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(self.loop)
+        self.session=None
+        self.auth = aiohttp.BasicAuth(username,password)
+        self.loop.create_task(self.create_new_session())
+        #self.session = aiohttp.ClientSession(auth=self.auth,raise_for_status=True)
 
+        self.keep_listening = True
+        
     @property
     def connected(self):
         return self._connected
@@ -46,68 +50,52 @@ class ISY_Session(object):
             if self.controller:
                 self.controller.websocket_connected(connected)
 
-    async def create_session(self):
+    async def create_new_session(self):
         if self.session is not None and self.session.closed is False:
             await self.session.close()
         
-        self.session = aiohttp.ClientSession(auth=self.auth)
+        self.session = aiohttp.ClientSession(auth=self.auth,raise_for_status=True)
 
-    async def request(self,path,timeout=None):
+    async def request_async(self,path,timeout=10):
         if self.session is None:
-            await self.create_session()
+            await self.create_new_session()
 
-        print ('http://'+self._address+'/rest/'+path)
+        logger.warning ('HTTP Get to {}'.format ('http://'+self._address+'/rest/'+path))
 
         try:
             async with self.session.get(
-                    'http://'+self._address+'/rest/'+path,chunked=True) as resp:
-                print(resp.status)
-                body = await resp.text()
-                print(body)        
+                    'http://'+self._address+'/rest/'+path,chunked=True,timeout=timeout) as response:
+                #print(response.status)
+                body = await response.text()
+                #print(body)        
+                return True,body
 
         except Exception as ex:
             self.connected = False
             logger.error('HTTP Get Error {}'.format(ex))
-            await asyncio.sleep(self.sleep_time)
+            return False
 
-    def rq (self,path):
-        self.loop.run_in_executor(None,self.request,path)
-        
+    def request (self,path,timeout):
+        return asyncio.run_coroutine_threadsafe(self.request_async(path,timeout),self.loop)
 
-    def start_websocket(self):
-        def start():
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            #loop = asyncio.get_event_loop()
-            loop.run_until_complete(self.listen_forever())
-            loop.run_until_complete(asyncio.sleep(0))
-            # Wait 250 ms for the underlying SSL connections to close
-            #loop.run_until_complete(asyncio.sleep(0.250))            
-            loop.close()
-
-        logger.warning ('Starting websocket thread')
-        self._ws_thread = threading.Thread(
-            target=start, args=())
-            
-        self._ws_thread.daemon = True
-        self._ws_thread.start()
+    def start_websocket(self,loop=None):
+        self.websocket_task = self.loop.create_task(wsc.listen_forever())
 
     async def listen_forever(self):
         URL = "ws://"+self._address+"/rest/subscribe"
-        session = None
 
-        while True:
+        while self.keep_listening:
             # outter loop restarted every time the connection fails
-            logger.warning('Outter loop...')
+            logger.warning('Connecting to WebSocket')
 
             try:
                 async with self.session.ws_connect(URL,headers=ws_headers,auth=self.auth,heartbeat=30) as ws:
-                    logger.warning ('Waiting for messages. WS Closed {} {} Info  {}'.format(ws.closed,ws.exception(),ws.protocol))
+                    logger.warning ('Websocket waiting for messages')
 
                     async for msg in ws:
                         self.connected = True
                         #print('Message received from server:', msg)
-                        logger.warning('Websocket Message: {}'.format(msg))
+                        logger.debug('Websocket Message: {}'.format(msg))
                         if msg.type == aiohttp.WSMsgType.TEXT:
                             try:
                                 event_node = ET.fromstring (msg.data)        
@@ -116,7 +104,7 @@ class ISY_Session(object):
                                     event = Websocket_Event(event_node)
 
                                     if event.valid:
-                                        print (event)
+                                        #logger.warning ('Websocket Event {}'.format(event))
                                         if self.controller:
                                             self.controller.websocket_event(event)
                             
@@ -127,6 +115,7 @@ class ISY_Session(object):
                             logger.warning ('Websocket Binary: {}'.format(msg.data))
 
                         elif msg.type == aiohttp.WSMsgType.PING:
+                            logger.warning('Ping received')
                             ws.pong()
 
                         elif msg.type == aiohttp.WSMsgType.PONG:
@@ -145,9 +134,8 @@ class ISY_Session(object):
                 
                 self.connected = False
 
-                logger.warning('Aysnc loop completed. Session closed {}'.format(session.closed))
+                logger.warning('Aysnc loop completed.')
                 await asyncio.sleep(self.sleep_time)
-                logger.warning('Aysnc timeout finished. Session closed {}'.format(session.closed))
 
             except Exception as ex:
                 self.connected = False
@@ -155,21 +143,29 @@ class ISY_Session(object):
                 await asyncio.sleep(self.sleep_time)
                 continue
 
-            await self.create_session()
+            if self.keep_listening:
+                await asyncio.sleep(self.sleep_time)
+                await self.create_new_session()
 
+    def close(self):
+        self.keep_listening=False
+        self.websocket_task.cancel()
+        self.loop.run_until_complete(self.websocket_task)
 
+        if self.session is not None and self.session.closed is False:
+            self.loop.run_until_complete (self.session.close())
 
 if __name__ == '__main__':
+    event_loop = asyncio.get_event_loop()
+    wsc = Async_Session(False,"192.168.1.51",80,'admin','admin',False,loop=event_loop)
+
     try:
-        wsc = ISY_Session(False,"192.168.1.51",80,'admin','admin',False)
-
-        while True:
-            asyncio.get_event_loop().run_until_complete(wsc.request('nodes'))
-            pass
-            time.sleep(10)
-
-
-        #wsc.start()
-
+        wsc.start_websocket()
+        event_loop.run_forever()
+    
     except KeyboardInterrupt:
         print("KeyboardInterrupt has been caught.")
+        wsc.close()
+        
+    finally:
+        event_loop.close()

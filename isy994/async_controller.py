@@ -3,6 +3,7 @@
 import time
 import traceback
 import threading 
+import asyncio
 from datetime import datetime
 from datetime import timedelta
 
@@ -12,13 +13,11 @@ from .items.variables.variable_container import Variable_Container
 from .items.programs.program_container import Program_Container 
 from .items.controller.controller_container import Controller_Container 
 
-from .network.http_client import HTTP_Client
-from .network.async_websocket_client import Websocket_Client
+from .network.async_session import Async_Session
 from .network.discover import Discover
 
 from .support.repeating_timer import Repeating_Timer
 
-import logging
 import logging
 
 import os
@@ -50,9 +49,9 @@ logger.addHandler(consoleHandler)
 #event categores controller, device, scene, variable, program
 
 
-class Controller(object):
+class Async_Controller(object):
 
-    def __init__(self,address=None,port=None,username='admin',password='admin',use_https=False,event_handler=None):
+    def __init__(self,address=None,username='admin',password='admin',port=None,use_https=False,loop=None):
         if address == None:
             discover = Discover()
             controller_list = discover.start()
@@ -68,10 +67,9 @@ class Controller(object):
         self.username = username
         self.password = password
         self.use_https= use_https
+        self.loop = loop or asyncio.get_event_loop()
 
-        self.event_handlers = []
-        if event_handler is not None:
-            self.event_handlers.append(event_handler)
+        self.event_queue = asyncio.Queue(maxsize=5000)
 
         self.controller_container = Controller_Container(self)
         self.device_container = Device_Container(self)
@@ -86,29 +84,49 @@ class Controller(object):
 
         self.controller_container.start()        
         
-        self.start()
+        #self.start()
 
-        self.watch_dog_timer = Repeating_Timer(30)
-        self.watch_dog_timer.add_callback(self.watch_dog_check)
+        #self.watch_dog_timer = Repeating_Timer(30)
+        #self.watch_dog_timer.add_callback(self.watch_dog_check)
 
-    def start(self):
+    async def run_forever(self):
         self.process_controller_event('status','init')        
+        print (self.address,self.port,self.username,self.password)
 
-        self.http_client = HTTP_Client (self.address,self.port,self.username,self.password,self.use_https)
+        self.client = Async_Session(controller=self,address=self.address,port=self.port,username=self.username,password=self.password,use_https=self.use_https, loop=self.loop)
 
         if self.get_controller_items () is True:
             self.process_controller_event('status','ready')
-            self.connect_websocket()
-        else:
-            self.process_controller_event('status','error')
-            self.retry_start(10)
+            #self.client.start_websocket()
+        #else:
+        #    self.process_controller_event('status','error')
+        #    self.retry_start(10)
 
+    '''
     def retry_start(self,delay_seconds):
         def restart ():
             self.start()
 
         self.restart_timer = threading.Timer(delay_seconds, restart) 
         self.restart_timer.start()
+    '''
+    def connect(self):
+        def start():
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            #loop = asyncio.get_event_loop()
+            loop.run_until_complete(self.listen_forever())
+            loop.run_until_complete(asyncio.sleep(0))
+            # Wait 250 ms for the underlying SSL connections to close
+            #loop.run_until_complete(asyncio.sleep(0.250))            
+            loop.close()
+
+        logger.warning ('Starting websocket thread')
+        self._ws_thread = threading.Thread(
+            target=start, args=())
+            
+        self._ws_thread.daemon = True
+        self._ws_thread.start()
         
     def get_controller_items(self):
         success = True
@@ -147,21 +165,43 @@ class Controller(object):
             self.scene_container.device_event(item)
 
     def publish_container_event(self,container,item,event,*args):
-        for event_handler in self.event_handlers:
-            try:
-                event_handler (container,item,event,*args)
-            except Exception as ex:
-                logger.error('Event handler Error {}'.format(ex))
-                traceback.print_exc()
-            
-    def send_request(self,path,query=None,timeout=None): 
-        success,response = self.http_client.request(path,query,timeout)
+        event = {
+            'container' : container,
+            'item' : item,
+            'event' : event,
+            'args' : args,
+        }
+
+        self.loop.run_until_complete (self.event_queue.put(event))
+
+    async def send_request(self,path,query=None,timeout=None): 
+        print ('send2',path)
+        success,response = await self.client.request(path,timeout)
+        print (success,response)
+
         if success:
             self.process_controller_event('http','connected')
         else:
             self.process_controller_event('http','error')
         return success, response
 
+
+    '''            
+    def send_request(self,path,query=None,timeout=None): 
+        #success,response = self.loop.run_until_complete(self.client.request(path,timeout))
+        timeout=5
+        print ('send1',path)
+        future = asyncio.run_coroutine_threadsafe(self.client.request(path,timeout),self.loop)
+        print ('send2',path)
+        success,response = future.result(timeout)
+        print ('send3',path)
+
+        if success:
+            self.process_controller_event('http','connected')
+        else:
+            self.process_controller_event('http','error')
+        return success, response
+    '''
     def websocket_connected(self,connected): #True websocket connected, False, no connection
         if connected:
             self.process_controller_event('websocket','connected')
@@ -211,15 +251,15 @@ class Controller(object):
         #print ('start watch dog!!!{}  {}   {}   {}'.format(self.last_heartbeat,self.heartbeat_interval,self.last_heartbeat + timedelta (seconds=self.heartbeat_interval),datetime.now()))
 
         if self.last_heartbeat + timedelta (seconds=self.heartbeat_interval) < datetime.now():
-            logger.warn('Watchdog timer triggered.')
+            logger.warn('Watchdog timer triggered. Restarting')
             #controller.state = 'lost'
             
-            #if self.websocket_client is not None:
-                #self.websocket_client.connect()
+            if self.websocket_client is not None:
+                self.websocket_client.connect()
                 #self.websocket_client = None
                 #self.websocket_connected (False)
                 
-            #self.start()
+            self.start()
 
         #print ('end watch dog!!!')
 
