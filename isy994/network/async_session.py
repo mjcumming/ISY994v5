@@ -39,7 +39,7 @@ class Async_Session(object):
 
         self.session=None
         self.auth = aiohttp.BasicAuth(username,password)
-        self.timeout = aiohttp.ClientTimeout(total=60,connect=10,sock_connect=10,sock_read=10)
+        self.timeout = aiohttp.ClientTimeout(total=60,connect=60,sock_connect=60,sock_read=60)
         self.loop.run_until_complete(self.create_new_session())
         #self.session = aiohttp.ClientSession(auth=self.auth,raise_for_status=True)
 
@@ -118,7 +118,7 @@ class Async_Session(object):
             logger.warning('Connecting to WebSocket')
 
             try:
-                async with self.session.ws_connect(URL,headers=ws_headers,auth=self.auth,heartbeat=15,receive_timeout=10) as ws:
+                async with self.session.ws_connect(URL,headers=ws_headers,auth=self.auth,heartbeat=30,receive_timeout=60) as ws:
                     logger.warning ('Websocket waiting for messages')
 
                     async for msg in ws:

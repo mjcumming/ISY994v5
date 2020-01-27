@@ -21,7 +21,7 @@ Each device has a common base class so that the user does not need to aware of t
 
 Designed to be easy to expand support to other ISY device types and technologies such as zWave.
 
-Requires 5.xx firmware. Tested against 5.16. Requires chunk mode to be OFF
+Requires 5.xx firmware. Tested against 5.16. Chunked can be on or off.
 
 An event handler is supplied when the controller is started. All device events (add, remove, property) can be captured through the event handler for processing as needed.
 
