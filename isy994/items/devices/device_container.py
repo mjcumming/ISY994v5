@@ -20,9 +20,9 @@ class Device_Container (Item_Container):
     def start(self):
         success,response = self.send_request('nodes/devices')
 
-        if success and response.status_code == 200:
+        if success:# and response.status == 200:
             try:
-                root = ET.fromstring (response.content)        
+                root = ET.fromstring (response)        
                 self.process_device_nodes (root)    
                 self.items_retrieved = True
                 return True

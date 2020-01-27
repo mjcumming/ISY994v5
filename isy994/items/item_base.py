@@ -42,8 +42,8 @@ class Item_Base(object):
     def get_property(self, property_):
         return self.properties[property_]
 
-    def send_request(self, path, query=None, timeout=None):
-        return self.container.send_request(path, query, timeout)
+    def send_request(self, path, timeout=None):
+        return self.container.send_request(path, timeout)
 
     def add_property_event_handler(self, handler):
         self.property_event_handlers.append(handler)

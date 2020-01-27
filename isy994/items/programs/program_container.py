@@ -19,14 +19,15 @@ class Program_Container (Item_Container):
         Item_Container.__init__(self,controller,'Program')
 
     def start(self):
-        success,response = self.controller.send_request('programs','subfolders=true')
+        success,response = self.controller.send_request('programs/?subfolders=true')
 
-        if success and response.status_code == 200:
+        if success:
             try:
-                root = ET.fromstring (response.content)        
+                root = ET.fromstring (response)        
                 self.process_program_nodes (root)    
                 self.items_retrieved = True
                 return True
+
             except Exception as ex:
                 logger.error('container error {}'.format(ex))
                 traceback.print_exc()

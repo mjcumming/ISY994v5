@@ -24,9 +24,9 @@ class Scene_Container (Item_Container):
     def start(self):
         success,response = self.controller.send_request('nodes/scenes')
 
-        if success and response.status_code == 200:
+        if success:
             try:
-                root = ET.fromstring (response.content)        
+                root = ET.fromstring (response)        
                 self.process_scene_nodes (root)       
                 self.items_retrieved = True
                 return True

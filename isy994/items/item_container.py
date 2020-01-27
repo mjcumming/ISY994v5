@@ -31,8 +31,8 @@ class Item_Container (object):
     def start(self):
         pass
        
-    def send_request(self,path,query=None,timeout=None): 
-        return self.controller.send_request(path,query,timeout)
+    def send_request(self,path,timeout=None): 
+        return self.controller.send_request(path,timeout)
 
     def websocket_event(self,event):
         pass

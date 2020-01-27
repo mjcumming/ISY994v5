@@ -21,10 +21,12 @@ class Variable_Container (Item_Container):
         Item_Container.__init__(self,controller,'Variable')
 
     def get_list(self, request_string):
-        success, response = self.controller.send_request(request_string)
-        if not success or response.status_code != 200:
+        success, response = self.send_request(request_string)
+
+        if not success:
             raise Exception('no response for request: ', request_string)
-        return ET.fromstring(response.content)
+        else:
+            return ET.fromstring(response)
 
     def get_and_process(self, var_type):
         try:

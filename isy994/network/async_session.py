@@ -2,7 +2,7 @@
 
 import asyncio
 import aiohttp
-import threading
+import functools
 from .websocket_event import Websocket_Event
 import xml.etree.ElementTree as ET
 import logging
@@ -12,6 +12,10 @@ logger = logging.getLogger(__name__)
 ws_headers = {
     "Sec-WebSocket-Protocol": "ISYSUB",
     "Origin" : "com.universal-devices.websockets.isy",
+}
+
+http_headers = {
+    "Connection" : "keep-alive",
 }
 
 
@@ -28,33 +32,50 @@ class Async_Session(object):
 
         # set some default values
         self.reply_timeout = kwargs.get('heartbeat') or 30
-        self.sleep_time = kwargs.get('sleep_time') or 10
+        self.sleep_time = kwargs.get('sleep_time') or 5
 
-        self._connected = False
+        self._websocket_connected = False
+        self._http_connected = False
+
         self.session=None
         self.auth = aiohttp.BasicAuth(username,password)
-        self.loop.create_task(self.create_new_session())
+        self.timeout = aiohttp.ClientTimeout(total=60,connect=10,sock_connect=10,sock_read=10)
+        self.loop.run_until_complete(self.create_new_session())
         #self.session = aiohttp.ClientSession(auth=self.auth,raise_for_status=True)
 
         self.keep_listening = True
         
     @property
-    def connected(self):
-        return self._connected
+    def websocket_connected(self):
+        return self._websocket_connected
 
-    @connected.setter
-    def connected(self,connected):
-        if self._connected != connected:
-            self._connected = connected
+    @websocket_connected.setter
+    def websocket_connected(self,connected):
+        if self._websocket_connected != connected:
+            self._websocket_connected = connected
             logger.warning ('Websocket Connected {}'.format(connected))
             if self.controller:
-                self.controller.websocket_connected(connected)
+                wrapped = functools.partial(self.controller.websocket_connected,connected)
+                self.loop.call_soon (wrapped)
+
+    @property
+    def http_connected(self):
+        return self._http_connected
+
+    @http_connected.setter
+    def http_connected(self,connected):
+        if self._http_connected != connected:
+            self._http_connected = connected
+            logger.warning ('HTTP Connected {}'.format(connected))
+            if self.controller:
+                wrapped = functools.partial(self.controller.http_connected,connected)
+                self.loop.call_soon (wrapped)
 
     async def create_new_session(self):
         if self.session is not None and self.session.closed is False:
             await self.session.close()
         
-        self.session = aiohttp.ClientSession(auth=self.auth,raise_for_status=True)
+        self.session = aiohttp.ClientSession(auth=self.auth,raise_for_status=True,headers=http_headers,timeout=self.timeout)
 
     async def request_async(self,path,timeout=10):
         if self.session is None:
@@ -63,23 +84,31 @@ class Async_Session(object):
         logger.warning ('HTTP Get to {}'.format ('http://'+self._address+'/rest/'+path))
 
         try:
-            async with self.session.get(
-                    'http://'+self._address+'/rest/'+path,chunked=True,timeout=timeout) as response:
-                #print(response.status)
-                body = await response.text()
-                #print(body)        
-                return True,body
+            async with self.session.get('http://'+self._address+'/rest/'+path,chunked=True,timeout=timeout) as response:
+                if response.status == 200:
+                    self.http_connected = True
+                    body = await response.text()
+                    #print(body)        
+                    return True,body
+                else:
+                    self.http_connected = False
+                    return False, None
 
         except Exception as ex:
-            self.connected = False
+            self.http_connected = False
             logger.error('HTTP Get Error {}'.format(ex))
-            return False
+            return False, None
 
     def request (self,path,timeout):
-        return asyncio.run_coroutine_threadsafe(self.request_async(path,timeout),self.loop)
+        try:
+            future = asyncio.run_coroutine_threadsafe(self.request_async(path,timeout),self.loop)
+            return future.result(10)
+        except Exception as ex:
+            logger.error('HTTP Get Error {}'.format(ex))
+            return False, None
 
-    def start_websocket(self,loop=None):
-        self.websocket_task = self.loop.create_task(wsc.listen_forever())
+    def start_websocket(self):
+        self.websocket_task = self.loop.create_task(self.listen_forever())
 
     async def listen_forever(self):
         URL = "ws://"+self._address+"/rest/subscribe"
@@ -89,11 +118,11 @@ class Async_Session(object):
             logger.warning('Connecting to WebSocket')
 
             try:
-                async with self.session.ws_connect(URL,headers=ws_headers,auth=self.auth,heartbeat=30) as ws:
+                async with self.session.ws_connect(URL,headers=ws_headers,auth=self.auth,heartbeat=15,receive_timeout=10) as ws:
                     logger.warning ('Websocket waiting for messages')
 
                     async for msg in ws:
-                        self.connected = True
+                        self.websocket_connected = True
                         #print('Message received from server:', msg)
                         logger.debug('Websocket Message: {}'.format(msg))
                         if msg.type == aiohttp.WSMsgType.TEXT:
@@ -104,9 +133,10 @@ class Async_Session(object):
                                     event = Websocket_Event(event_node)
 
                                     if event.valid:
-                                        #logger.warning ('Websocket Event {}'.format(event))
+                                        logger.debug ('Websocket Event {}'.format(event))
                                         if self.controller:
-                                            self.controller.websocket_event(event)
+                                            wrapped = functools.partial(self.controller.websocket_event,event)
+                                            self.loop.call_soon (wrapped)
                             
                             except Exception as ex:
                                 logger.error('Websocket Message Error {}'.format(ex))
@@ -132,13 +162,13 @@ class Async_Session(object):
                             logger.warning ('Close {}'.format(ws.exception()))
                             await ws.close()
                 
-                self.connected = False
+                self.websocket_connected = False
 
                 logger.warning('Aysnc loop completed.')
                 await asyncio.sleep(self.sleep_time)
 
             except Exception as ex:
-                self.connected = False
+                self.websocket_connected = False
                 logger.error('Websocket Error {}'.format(ex))
                 await asyncio.sleep(self.sleep_time)
                 continue
