@@ -25,10 +25,10 @@ try:
         if dimmer is not None:
             dimmer.set_level (0)
 
-        time.sleep(2)
+        time.sleep(.5)
         
         if dimmer is not None:
-            dimmer.set_level (100)
+            dimmer.set_level (2)
 
 
 except KeyboardInterrupt:

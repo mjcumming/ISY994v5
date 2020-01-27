@@ -2,6 +2,8 @@
 
 Class based interface to the ISY994 device with V5 firmware.
 
+As of version 0.6.6, using aiohttp and asyncio to manage the HTTP and WebSocket connection to the ISY.
+
 Provides a common interface to all devices, variables, programs, and scenes on an ISY controller. 
 
 After connecting to the ISY, the 4 types (device, scenes, programs, and variables) of items on the ISY are enumerated. The event handler generates 'add' events are items are discovered. Each item has properties that generate 'property' events as they are changed. 
