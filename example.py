@@ -15,7 +15,7 @@ def isy_event_handler(container,item,event,*args):
 
     if container.container_type == 'Device' and event == 'add' and item.address == dimmer_address:
         global dimmer
-        #dimmer = item
+        dimmer = item
 
 
 try:
@@ -25,10 +25,10 @@ try:
         if dimmer is not None:
             dimmer.set_level (0)
 
-        time.sleep(.5)
+        time.sleep(2)
         
         if dimmer is not None:
-            dimmer.set_level (2)
+            dimmer.set_level (.2)
 
 
 except KeyboardInterrupt:

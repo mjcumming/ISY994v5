@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 ''' 
-
+Only contains the ISY controller item, use the container for consistency
 '''
 from .. item_base import Item_Base
 
@@ -24,3 +24,8 @@ class Controller_Base(Item_Base):
     def get_identifier(self):
         return self.id   
  
+    def get_controller_time(self):
+        success, response = self.send_request('time')
+        if success:
+            pass
+        return success,response

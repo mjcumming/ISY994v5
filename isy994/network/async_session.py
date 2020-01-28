@@ -3,10 +3,11 @@
 import asyncio
 import aiohttp
 import functools
-from .websocket_event import Websocket_Event
 import xml.etree.ElementTree as ET
 import logging
-import time
+
+from .websocket_event import Websocket_Event
+
 logger = logging.getLogger(__name__)
 
 ws_headers = {
@@ -21,27 +22,30 @@ http_headers = {
 
 class Async_Session(object):
 
-    def __init__(self,controller,address,port,username,password,https=False,loop=False, **kwargs):
+    def __init__(self,controller,address,port,username,password,https=False,loop=False):
         self.controller = controller
 
         self._address = address
         self._port = port
-        self._https = https
+        self._https = https # not implemented
 
         self.loop=loop
 
-        # set some default values
-        self.reply_timeout = kwargs.get('heartbeat') or 30
-        self.sleep_time = kwargs.get('sleep_time') or 5
+        # time outs
+        self._heart_beat = 30
+        self._request_timeout = 30
+        self._sleep_time = 10
 
         self._websocket_connected = False
+        self._websocket_url = "ws://"+self._address+"/rest/subscribe"
+
         self._http_connected = False
+        self._rest_url = 'http://'+self._address+'/rest/'
 
         self.session=None
         self.auth = aiohttp.BasicAuth(username,password)
         self.timeout = aiohttp.ClientTimeout(total=60,connect=60,sock_connect=60,sock_read=60)
         self.loop.run_until_complete(self.create_new_session())
-        #self.session = aiohttp.ClientSession(auth=self.auth,raise_for_status=True)
 
         self.keep_listening = True
         
@@ -77,20 +81,24 @@ class Async_Session(object):
         
         self.session = aiohttp.ClientSession(auth=self.auth,raise_for_status=True,headers=http_headers,timeout=self.timeout)
 
-    async def request_async(self,path,timeout=10):
+    async def request_async(self,path,timeout):
+        timeout = timeout or self._request_timeout
+
         if self.session is None:
             await self.create_new_session()
 
-        logger.warning ('HTTP Get to {}'.format ('http://'+self._address+'/rest/'+path))
+        logger.debug ('HTTP Get to {}'.format (self._rest_url+path))
 
         try:
-            async with self.session.get('http://'+self._address+'/rest/'+path,chunked=True,timeout=timeout) as response:
+            async with self.session.get(self._rest_url+path,chunked=True,timeout=timeout) as response:
                 if response.status == 200:
                     self.http_connected = True
                     body = await response.text()
+                    logger.debug ('HTTP Get response {}'.format(body))
                     #print(body)        
                     return True,body
                 else:
+                    logger.error('HTTP Get status error {}'.format(response.status))
                     self.http_connected = False
                     return False, None
 
@@ -99,10 +107,13 @@ class Async_Session(object):
             logger.error('HTTP Get Error {}'.format(ex))
             return False, None
 
-    def request (self,path,timeout):
+    def request (self,path,timeout): #sync
+        timeout = timeout or self._request_timeout
+
         try:
             future = asyncio.run_coroutine_threadsafe(self.request_async(path,timeout),self.loop)
             return future.result(10)
+
         except Exception as ex:
             logger.error('HTTP Get Error {}'.format(ex))
             return False, None
@@ -111,14 +122,13 @@ class Async_Session(object):
         self.websocket_task = self.loop.create_task(self.listen_forever())
 
     async def listen_forever(self):
-        URL = "ws://"+self._address+"/rest/subscribe"
 
         while self.keep_listening:
             # outter loop restarted every time the connection fails
             logger.warning('Connecting to WebSocket')
 
             try:
-                async with self.session.ws_connect(URL,headers=ws_headers,auth=self.auth,heartbeat=30,receive_timeout=60) as ws:
+                async with self.session.ws_connect(self._websocket_url,headers=ws_headers,auth=self.auth,heartbeat=self._heart_beat,receive_timeout=self._request_timeout) as ws:
                     logger.warning ('Websocket waiting for messages')
 
                     async for msg in ws:
@@ -164,17 +174,17 @@ class Async_Session(object):
                 
                 self.websocket_connected = False
 
-                logger.warning('Aysnc loop completed.')
-                await asyncio.sleep(self.sleep_time)
+                logger.warning('Websocket Aysnc loop completed.')
+                await asyncio.sleep(self._sleep_time)
 
             except Exception as ex:
                 self.websocket_connected = False
                 logger.error('Websocket Error {}'.format(ex))
-                await asyncio.sleep(self.sleep_time)
+                await asyncio.sleep(self._sleep_time)
                 continue
 
             if self.keep_listening:
-                await asyncio.sleep(self.sleep_time)
+                await asyncio.sleep(self._sleep_time)
                 await self.create_new_session()
 
     def close(self):

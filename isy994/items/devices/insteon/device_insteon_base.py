@@ -11,6 +11,7 @@ Common to all elements returned from rest/nodes/devices
 '''
 
 
+from .. common.device_base import Device_Base
 
 class Device_Insteon_Base(object):
 

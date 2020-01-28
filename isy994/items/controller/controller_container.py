@@ -25,3 +25,7 @@ class Controller_Container (Item_Container):
     def controller_event(self,property, value):
         controller = self.get('controller')
         controller.set_property(property, value)
+
+    def get_controller_time(self):
+        controller = self.get('controller')
+        return controller.get_controller_time()

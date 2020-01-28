@@ -20,31 +20,7 @@ from .support.repeating_timer import Repeating_Timer
 
 import logging
 
-import os
-
-#logging.basicConfig(level=logging.INFO,filename=os.path.expanduser("~") + '/isy994v5.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
-
 logger = logging.getLogger(__name__)
-
-import logging
-logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
-#logger = logging.getLogger()
-logger = logging.getLogger(__name__)
-
-
-#logging.basicConfig(level=logging.DEBUG,filename=os.path.expanduser("~") + '/isy994v5.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
-
-
-
-#print ("{0}\{1}.log".format(os.path.expanduser("~"), 'isy994v5'))
-
-fileHandler = logging.FileHandler("{0}/{1}.log".format(os.path.expanduser("~"), 'isy994v5'))
-fileHandler.setFormatter(logFormatter)
-logger.addHandler(fileHandler)
-
-consoleHandler = logging.StreamHandler()
-consoleHandler.setFormatter(logFormatter)
-logger.addHandler(consoleHandler)
 
 #event categores controller, device, scene, variable, program
 
@@ -80,8 +56,6 @@ class Controller(object):
 
         self.last_heartbeat = datetime.now()
         self.heartbeat_interval = 30 # set below by data from controller, needed here for watchdog if no initial connection
-
-        self.websocket_client = None
 
         self.controller_container.start()        
         
@@ -143,9 +117,9 @@ class Controller(object):
             if self.program_container.start() is False:
                 success = False
         
-        #succ,resp =self.send_request('time')
-        #if succ is not True:
-        #    success = False
+        succ,_  = self.controller_container.get_controller_time()
+        if succ is False:
+            success = False
         
         return success
 
