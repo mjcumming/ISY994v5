@@ -34,6 +34,6 @@ class Device_Insteon_Base(object):
     def flag(self, flag):
         self._flag = flag
         if flag & 16:
-            self.set_property("status", "alert")
+            self.set_property("status", "alert")# pylint: disable=no-member
         else:
-            self.set_property("status", "ready")
+            self.set_property("status", "ready")# pylint: disable=no-member

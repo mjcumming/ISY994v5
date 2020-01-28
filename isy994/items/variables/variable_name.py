@@ -1,8 +1,5 @@
 #! /usr/bin/env python
 
-import xml.etree.ElementTree as ET
-
-
 class Variable_Name(object):
     def __init__(self, node):
 
