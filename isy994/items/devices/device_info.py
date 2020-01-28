@@ -7,7 +7,7 @@ import traceback
 # process a node and assemble the info to build a device
 
 
-''' zwave node....
+""" zwave node....
 <nodeInfo>
 <node flag="0">
 <address>ZW002_143</address>
@@ -35,11 +35,11 @@ import traceback
 <property id="TPW" value="31765" formatted="317.65 kWh" uom="33" prec="2"/>
 </properties>
 </nodeInfo>
-'''
+"""
+
 
 class Device_Info(object):
-
-    def __init__(self,node):
+    def __init__(self, node):
 
         self.node = node
 
@@ -49,47 +49,47 @@ class Device_Info(object):
 
         try:
             self.family = None
-            family_ = node.find('family')
+            family_ = node.find("family")
             if family_ is not None:
                 self.family = family_.text
             else:
-                self.family = '1'        
+                self.family = "1"
 
-            type_ = node.find('type')
+            type_ = node.find("type")
             self.type = type_.text
 
-            types = type_.text.split('.')
-            self.category = types [0]    
-            self.sub_category = types [1]    
-            self.version = types [2]    
-            self.reserved = types [3] 
+            types = type_.text.split(".")
+            self.category = types[0]
+            self.sub_category = types[1]
+            self.version = types[2]
+            self.reserved = types[3]
 
-            address = node.find('address')
+            address = node.find("address")
             self.address = address.text
-            self.address_parts = address.text.split(' ')
+            self.address_parts = address.text.split(" ")
 
-            name = node.find('name')
+            name = node.find("name")
             self.name = name.text
 
-            flag = node.get ('flag')
-            self.flag = int(flag) 
-            self.node_def_id = node.get('nodeDefId')
+            flag = node.get("flag")
+            self.flag = int(flag)
+            self.node_def_id = node.get("nodeDefId")
 
-            #container_node = node.find('container')
-            #self.container_node_address = container_node.text  
+            # container_node = node.find('container')
+            # self.container_node_address = container_node.text
 
-            for node_property in node.iter('property'):
-                id = node_property.attrib ['id']
+            for node_property in node.iter("property"):
+                id = node_property.attrib["id"]
                 property_ = {}
-                for key,value in node_property.items():
-                    if key != 'id':
-                        property_ [key] = value
-                self.properties [id] = property_
+                for key, value in node_property.items():
+                    if key != "id":
+                        property_[key] = value
+                self.properties[id] = property_
 
             self.devtype_cat = None
-            devtype_node = node.find('devtype')
+            devtype_node = node.find("devtype")
             if devtype_node is not None:
-                devtype_cat_ = devtype_node.find('cat')
+                devtype_cat_ = devtype_node.find("cat")
                 if devtype_cat_ is not None:
                     self.devtype_cat = devtype_cat_.text
 
@@ -98,15 +98,21 @@ class Device_Info(object):
             # print (self)
 
         except Exception:
-                traceback.print_exc()       
+            traceback.print_exc()
 
-    def get_property (self,node,key):
+    def get_property(self, node, key):
         if node in self.properties:
-            if key in self.properties [node]:
-                return self.properties [node] [key]
+            if key in self.properties[node]:
+                return self.properties[node][key]
         return None
 
     def __repr__(self):
-        return 'Device: Name {} Address {}, Family {}, Type {}, DevCat {}, Def ID {}'.format(self.name,self.address,
-                 self.family,self.type,self.devtype_cat,self.node_def_id)
-    
+        return "Device: Name {} Address {}, Family {}, Type {}, DevCat {}, Def ID {}".format(
+            self.name,
+            self.address,
+            self.family,
+            self.type,
+            self.devtype_cat,
+            self.node_def_id,
+        )
+

@@ -4,46 +4,46 @@
 from ..common.device_fan import Device_Fan
 from .device_insteon_base import Device_Insteon_Base
 
-speeds=['off','low','medium','high']
+speeds = ["off", "low", "medium", "high"]
 
-class Device_Insteon_Fan(Device_Fan,Device_Insteon_Base):
 
+class Device_Insteon_Fan(Device_Fan, Device_Insteon_Base):
     def __init__(self, container, device_info):
-        Device_Fan.__init__(self,container,device_info.name,device_info.address,speeds)
-        Device_Insteon_Base.__init__(self,device_info)
+        Device_Fan.__init__(
+            self, container, device_info.name, device_info.address, speeds
+        )
+        Device_Insteon_Base.__init__(self, device_info)
 
-        value = device_info.get_property('ST','value')
+        value = device_info.get_property("ST", "value")
         if value:
-            self.set_property ('speed',self.level_to_speed(int(value)))
+            self.set_property("speed", self.level_to_speed(int(value)))
 
-    def process_websocket_event(self,event):
-            if event.control == 'ST':
-                self.set_property ('speed',self.level_to_speed(int(event.action)))
+    def process_websocket_event(self, event):
+        if event.control == "ST":
+            self.set_property("speed", self.level_to_speed(int(event.action)))
 
-    def set_speed (self,speed):
+    def set_speed(self, speed):
         level = self.speed_to_level(speed)
-        path = ('nodes/' + self.address + '/cmd/DON/' + str(level))
+        path = "nodes/" + self.address + "/cmd/DON/" + str(level)
         return self.send_request(path)
- 
-    def level_to_speed(self,level):
-        if level == 0:
-            return'off'
-        elif level > 0 and level <= 64:
-            return 'low'
-        elif level >= 50 and level <= 191:
-           return 'medium'
-        else:
-            return 'high'
 
-    def speed_to_level(self,speed):
-        if speed == 'off':
+    def level_to_speed(self, level):
+        if level == 0:
+            return "off"
+        elif level > 0 and level <= 64:
+            return "low"
+        elif level >= 50 and level <= 191:
+            return "medium"
+        else:
+            return "high"
+
+    def speed_to_level(self, speed):
+        if speed == "off":
             return 0
-        elif speed == 'low':
+        elif speed == "low":
             return 63
-        elif speed == 'medium':
+        elif speed == "medium":
             return 99
         else:
             return 255
-
-
 

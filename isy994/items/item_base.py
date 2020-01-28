@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-''' 
+""" 
 
 Base Device
 
@@ -10,18 +10,18 @@ status property -> ready, alert, lost
 
 provides a common mechanism to subscribe to item property changes
 
-'''
-
+"""
 
 
 class Item_Base(object):
-
     def __init__(self, container, name):
         self.container = container
 
         self.name = name
 
-        self.properties = {'status': 'init'}  # list of properties key = property name, value = property value
+        self.properties = {
+            "status": "init"
+        }  # list of properties key = property name, value = property value
 
         self.property_event_handlers = []
 
@@ -31,7 +31,9 @@ class Item_Base(object):
     def add_property(self, property_, value=None):
         self.properties[property_] = value
 
-    def set_property(self, property_, value, always_publish=False):  # propagates up to the container and to handlers
+    def set_property(
+        self, property_, value, always_publish=False
+    ):  # propagates up to the container and to handlers
         if self.properties[property_] != value or always_publish:
             self.properties[property_] = value
             self.container.property_change(self, property_, value)
@@ -49,4 +51,5 @@ class Item_Base(object):
         self.property_event_handlers.append(handler)
 
     def get_identifier(self):
-        pass # subclasses to provide
+        pass  # subclasses to provide
+
