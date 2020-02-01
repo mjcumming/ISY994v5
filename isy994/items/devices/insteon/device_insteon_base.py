@@ -37,3 +37,7 @@ class Device_Insteon_Base(object):
             self.set_property("status", "alert")# pylint: disable=no-member
         else:
             self.set_property("status", "ready")# pylint: disable=no-member
+
+    def beep(self): #not all insteon devices
+        path = "nodes/" + self.address + "/cmd/BEEP"
+        return self.send_request(path)

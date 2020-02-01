@@ -5,7 +5,8 @@ import traceback
 import threading
 from datetime import datetime
 from datetime import timedelta
-import asyncio
+import asyncio 
+from aiorun import run
 
 from .items.devices.device_container import Device_Container
 from .items.scenes.scene_container import Scene_Container
@@ -76,11 +77,16 @@ class Controller(object):
 
     def connect(self):
         def start():
-            asyncio.set_event_loop(self.event_loop)
-            self.event_loop.run_forever()
-            self.session.close()
+            try:
+                asyncio.set_event_loop(self.event_loop)
+                self.event_loop.run_forever()
+                logger.warning ('Event loop stopped')
+                #self.session.close()
+            except:
+                logger.error ('Error in event loop')
 
         self.event_loop = asyncio.new_event_loop()
+
         self.session = Async_Session(
             self,
             self.address,
@@ -94,8 +100,9 @@ class Controller(object):
         logger.warning("Starting Session thread")
         self._ws_thread = threading.Thread(target=start, args=())
 
-        self._ws_thread.daemon = True
+        #self._ws_thread.daemon = True
         self._ws_thread.start()
+        #self.event_loop_future = self.event_loop.run_in_executor(None,start)
 
     def start(self):
         self.process_controller_event("status", "init")
@@ -226,3 +233,7 @@ class Controller(object):
         ):
             logger.warn("Watchdog timer triggered.")
 
+    def close(self):
+        self.event_loop.stop()
+        self._ws_thread.join()
+        self.session.close()

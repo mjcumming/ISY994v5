@@ -1,10 +1,11 @@
 #!/usr/local/bin/python
 
 import asyncio
-import aiohttp
 import functools
-import xml.etree.ElementTree as ET
 import logging
+import xml.etree.ElementTree as ET
+
+import aiohttp
 
 from .websocket_event import Websocket_Event
 
@@ -60,7 +61,7 @@ class Async_Session(object):
     def websocket_connected(self, connected):
         if self._websocket_connected != connected:
             self._websocket_connected = connected
-            logger.warning("Websocket Connected {}".format(connected))
+            logger.info("Websocket Connected {}".format(connected))
             if self.controller:
                 wrapped = functools.partial(
                     self.controller.websocket_connected, connected
@@ -75,7 +76,7 @@ class Async_Session(object):
     def http_connected(self, connected):
         if self._http_connected != connected:
             self._http_connected = connected
-            logger.warning("HTTP Connected {}".format(connected))
+            logger.info("HTTP Connected {}".format(connected))
             if self.controller:
                 wrapped = functools.partial(self.controller.http_connected, connected)
                 self.loop.call_soon(wrapped)
@@ -136,89 +137,96 @@ class Async_Session(object):
         self.websocket_task = self.loop.create_task(self.listen_forever())
 
     async def listen_forever(self):
+        await asyncio.sleep(5)
 
         while self.keep_listening:
-            # outter loop restarted every time the connection fails
-            logger.warning("Connecting to WebSocket")
 
             try:
-                async with self.session.ws_connect(
-                    self._websocket_url,
-                    headers=ws_headers,
-                    auth=self.auth,
-                    heartbeat=self._heart_beat,
-                    receive_timeout=self._request_timeout,
-                ) as ws:
-                    logger.warning("Websocket waiting for messages")
+                logger.info("Connecting to WebSocket")
 
-                    async for msg in ws:
-                        self.websocket_connected = True
-                        # print('Message received from server:', msg)
-                        logger.debug("Websocket Message: {}".format(msg))
-                        if msg.type == aiohttp.WSMsgType.TEXT:
-                            try:
-                                event_node = ET.fromstring(msg.data)
+                try:
+                    async with self.session.ws_connect(
+                        self._websocket_url,
+                        headers=ws_headers,
+                        auth=self.auth,
+                        heartbeat=self._heart_beat,
+                        receive_timeout=self._request_timeout,
+                    ) as ws:
+                        logger.info("Websocket waiting for messages")
 
-                                if event_node.tag == "Event":
-                                    event = Websocket_Event(event_node)
+                        async for msg in ws:
+                            self.websocket_connected = True
+                            # print('Message received from server:', msg)
+                            logger.debug("Websocket Message: {}".format(msg))
+                            if msg.type == aiohttp.WSMsgType.TEXT:
+                                try:
+                                    event_node = ET.fromstring(msg.data)
 
-                                    if event.valid:
-                                        logger.debug("Websocket Event {}".format(event))
-                                        if self.controller:
-                                            wrapped = functools.partial(
-                                                self.controller.websocket_event, event
-                                            )
-                                            self.loop.call_soon(wrapped)
+                                    if event_node.tag == "Event":
+                                        event = Websocket_Event(event_node)
 
-                            except Exception as ex:
-                                logger.error("Websocket Message Error {}".format(ex))
+                                        if event.valid:
+                                            logger.debug("Websocket Event {}".format(event))
+                                            if self.controller:
+                                                wrapped = functools.partial(
+                                                    self.controller.websocket_event, event
+                                                )
+                                                self.loop.call_soon(wrapped)
 
-                        elif msg.type == aiohttp.WSMsgType.BINARY:
-                            logger.warning("Websocket Binary: {}".format(msg.data))
+                                except Exception as ex:
+                                    logger.error("Websocket Message Error {}".format(ex))
 
-                        elif msg.type == aiohttp.WSMsgType.PING:
-                            logger.warning("Ping received")
-                            ws.pong()
+                            elif msg.type == aiohttp.WSMsgType.BINARY:
+                                logger.warning("Websocket Binary: {}".format(msg.data))
 
-                        elif msg.type == aiohttp.WSMsgType.PONG:
-                            logger.warning("Pong received")
+                            elif msg.type == aiohttp.WSMsgType.PING:
+                                logger.warning("Ping received")
+                                ws.pong()
 
-                        elif msg.type == aiohttp.WSMsgType.CLOSE:
-                            logger.warning("Close received")
-                            await ws.close()
+                            elif msg.type == aiohttp.WSMsgType.PONG:
+                                logger.warning("Pong received")
 
-                        elif msg.type == aiohttp.WSMsgType.ERROR:
-                            logger.error(
-                                "Error during receive {}".format(ws.exception())
-                            )
+                            elif msg.type == aiohttp.WSMsgType.CLOSE:
+                                logger.warning("Close received")
+                                await ws.close()
 
-                        elif msg.type == aiohttp.WSMsgType.CLOSED:
-                            logger.warning("Close {}".format(ws.exception()))
-                            await ws.close()
+                            elif msg.type == aiohttp.WSMsgType.ERROR:
+                                logger.error(
+                                    "Error during receive {}".format(ws.exception())
+                                )
 
-                self.websocket_connected = False
+                            elif msg.type == aiohttp.WSMsgType.CLOSED:
+                                logger.warning("Close {}".format(ws.exception()))
+                                await ws.close()
 
-                logger.warning("Websocket Aysnc loop completed.")
-                await asyncio.sleep(self._sleep_time)
+                    self.websocket_connected = False
+
+                    logger.warning("Websocket Aysnc loop completed.")
+                    await asyncio.sleep(self._sleep_time)
+
+                except Exception as ex:
+                    self.websocket_connected = False
+                    logger.error("Websocket Error {}".format(ex))
+                    await asyncio.sleep(self._sleep_time)
+                    continue
+
+                if self.keep_listening:
+                    await asyncio.sleep(self._sleep_time)
+                    await self.create_new_session()
 
             except Exception as ex:
-                self.websocket_connected = False
-                logger.error("Websocket Error {}".format(ex))
-                await asyncio.sleep(self._sleep_time)
-                continue
-
-            if self.keep_listening:
-                await asyncio.sleep(self._sleep_time)
-                await self.create_new_session()
+                logger.error("Inner listen forever error {}".format(ex))
 
     def close(self):
+        self.websocket_connected = False
+        self.http_connected = False
+
         self.keep_listening = False
+
         self.websocket_task.cancel()
-        self.loop.run_until_complete(self.websocket_task)
 
         if self.session is not None and self.session.closed is False:
             self.loop.run_until_complete(self.session.close())
-
 
 if __name__ == "__main__":
     event_loop = asyncio.get_event_loop()
