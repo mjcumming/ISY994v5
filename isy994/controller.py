@@ -51,9 +51,7 @@ class Controller(object):
         self.password = password
         self.use_https = use_https
 
-        self.event_handlers = []
-        if event_handler is not None:
-            self.event_handlers.append(event_handler)
+        self.event_handler = event_handler
 
         self.controller_container = Controller_Container(self)
         self.device_container = Device_Container(self)
@@ -162,12 +160,11 @@ class Controller(object):
             self.scene_container.device_event(item)
 
     def publish_container_event(self, container, item, event, *args):
-        for event_handler in self.event_handlers:
-            try:
-                event_handler(container, item, event, *args)
-            except Exception as ex:
-                logger.error("Event handler Error {}".format(ex))
-                traceback.print_exc()
+        try:
+            self.event_handler(container, item, event, *args)
+        except Exception as ex:
+            logger.error("Event handler Error {}".format(ex))
+            traceback.print_exc()
 
     def send_request(self, path, timeout=None):
         success, response = self.session.request(path, timeout)
@@ -188,7 +185,7 @@ class Controller(object):
             self.process_controller_event("websocket", "disconnected")
 
     def websocket_event(self, event):  # process websocket event
-        logger.warning("Websocket Event {}".format(event))
+        logger.info("Websocket Event {}".format(event))
 
         try:
             if event.address is not None:  # event from .a device/node
