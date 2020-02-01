@@ -31,8 +31,8 @@ class Variable_Container(Item_Container):
 
     def get_and_process(self, var_type):
         try:
-            vars_list = self.get_list("/vars/get/" + var_type)
-            defs_list = self.get_list("/vars/definitions/" + var_type)
+            vars_list = self.get_list("vars/get/" + var_type)
+            defs_list = self.get_list("vars/definitions/" + var_type)
             self.process_variable_nodes(vars_list, defs_list)
 
         except Exception as error:
