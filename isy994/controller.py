@@ -97,9 +97,8 @@ class Controller(object):
         logger.warning("Starting Session thread")
         self._ws_thread = threading.Thread(target=start, args=())
 
-        #self._ws_thread.daemon = True
+        self._ws_thread.daemon = True
         self._ws_thread.start()
-        #self.event_loop_future = self.event_loop.run_in_executor(None,start)
 
     def start(self):
         self.process_controller_event("status", "init")
@@ -227,7 +226,7 @@ class Controller(object):
             self.last_heartbeat + timedelta(seconds=self.heartbeat_interval)
             < datetime.now()
         ):
-            logger.warn("Watchdog timer triggered.")
+            logger.warning("Watchdog timer triggered.")
 
     def close(self):
         self.event_loop.stop()
