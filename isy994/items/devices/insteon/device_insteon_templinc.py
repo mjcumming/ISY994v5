@@ -4,7 +4,7 @@
 from ..common.device_thermostat import Device_Thermostat
 from .device_insteon_base import Device_Insteon_Base
 
-MODES = ["Off", "Heat", "Cool", "Auto", "Program Auto"]
+MODES = ["Off", "Heat", "Cool", "Auto", "Program Auto","Program Auto"]
 STATUS = ["Idle", "Heating", "Cooling"]
 
 FAN_MODES = {
@@ -105,4 +105,3 @@ class Device_Insteon_TempLinc(Device_Thermostat, Device_Insteon_Base):
     def set_coolsetpoint(self, setpoint):
         path = "nodes/" + self.coolsetpoint_address + "/cmd/DON/" + str(setpoint * 2)
         return self.send_request(path)
-

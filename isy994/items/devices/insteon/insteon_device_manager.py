@@ -12,6 +12,7 @@ from .device_insteon_switch import Device_Insteon_Switch
 from .device_insteon_fan import Device_Insteon_Fan
 from .device_insteon_controller import Device_Insteon_Controller
 from .device_insteon_templinc import Device_Insteon_TempLinc
+from .device_insteon_siren import Device_Insteon_Siren
 
 insteon_device_classes = {
     "0": Device_Insteon_Controller,
@@ -68,6 +69,13 @@ def get_insteon_device_class(device_info):
         and device_info.address_parts[3] == "2"
     ):  # IOLinc relay
         return Device_Insteon_Switch
+
+    if (
+        device_info.category == "7"
+        and device_info.sub_category == "30"
+        and device_info.address_parts[3] == "1"
+    ):  # IOLinc sensor
+        return Device_Insteon_Siren
 
     # print (device_info.node_def_id.find('KeypadButton') , device_info.address_parts [3])
     # override device cat for keypadlinc dimmer buttons and change to switch type devices

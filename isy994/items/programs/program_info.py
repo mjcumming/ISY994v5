@@ -15,8 +15,8 @@ class Program_Info(object):
             if node.attrib["folder"] == "true":  # program folder, not interested
                 return
 
-            if node.attrib["enabled"] == "false":  # not enabled
-                return
+            #if node.attrib["enabled"] == "false":  # not enabled
+            #    return
 
             self.id = node.attrib["id"]
             self.name = node.find("name").text

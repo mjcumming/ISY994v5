@@ -39,5 +39,9 @@ class Device_Insteon_Base(object):
             self.set_property("status", "ready")# pylint: disable=no-member
 
     def beep(self): #not all insteon devices
-        path = "nodes/" + self.address + "/cmd/BEEP"
-        return self.send_request(path)
+        path = "nodes/" + self.address + "/cmd/BEEP"# pylint: disable=no-member
+        return self.send_request(path)# pylint: disable=no-member
+
+    def query(self): #no value returns, generates a websocket event if value is changed
+        path = "nodes/" + self.address + "/cmd/QUERY"# pylint: disable=no-member
+        return self.send_request(path)# pylint: disable=no-member        

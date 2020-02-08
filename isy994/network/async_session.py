@@ -137,6 +137,8 @@ class Async_Session(object):
         self.websocket_task = self.loop.create_task(self.listen_forever())
 
     async def listen_forever(self):
+        logger.info("WebSocket Listen Forever Start")
+
         await asyncio.sleep(5)
 
         while self.keep_listening:

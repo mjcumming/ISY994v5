@@ -101,6 +101,7 @@ class Controller(object):
         self._ws_thread.start()
 
     def start(self):
+        logger.info ('Starting controller')
         self.process_controller_event("status", "init")
 
         if self.get_controller_items() is True:
@@ -123,26 +124,33 @@ class Controller(object):
         if self.device_container.items_retrieved is False:
             if self.device_container.start() is False:
                 success = False
+                logger.info ('Get device items success {}'.format(success))
 
         if self.scene_container.items_retrieved is False:
             if self.scene_container.start() is False:
                 success = False
+                logger.info ('Get scene items success {}'.format(success))
 
         if self.variable_container.items_retrieved is False:
             if self.variable_container.start() is False:
                 success = False
+                logger.info ('Get variable items success {}'.format(success))
 
         if self.program_container.items_retrieved is False:
             if self.program_container.start() is False:
                 success = False
+                logger.info ('Get program items success {}'.format(success))
 
         succ, _ = self.controller_container.get_controller_time()
         if succ is False:
             success = False
 
+        logger.info ('Retrieved controller items, success = {}'.format(success))
+
         return success
 
     def connect_websocket(self):
+        logger.warning ('Starting Websocket')
         self.session.start_websocket()
 
     def container_event(self, container, item, event, *args):
