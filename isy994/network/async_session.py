@@ -87,38 +87,43 @@ class Async_Session(object):
 
         self.session = aiohttp.ClientSession(
             auth=self.auth,
-            raise_for_status=True,
+            raise_for_status=False,
             headers=http_headers,
             timeout=self.timeout,
         )
 
     async def request_async(self, path, timeout):
-        timeout = timeout or self._request_timeout
+        timeout = 60#timeout or self._request_timeout
 
         if self.session is None:
             await self.create_new_session()
 
-        logger.debug("HTTP Get to {}".format(self._rest_url + path))
+        tries = 0
+        while tries < 5:
+            try:
+                tries = tries +1
+                logger.info("HTTP Get to {}".format(self._rest_url + path))
 
-        try:
-            async with self.session.get(
-                self._rest_url + path, chunked=True, timeout=timeout
-            ) as response:
-                if response.status == 200:
-                    self.http_connected = True
-                    body = await response.text()
-                    logger.debug("HTTP Get response {}".format(body))
-                    # print(body)
-                    return True, body
-                else:
-                    logger.error("HTTP Get status error {}".format(response.status))
-                    self.http_connected = False
-                    return False, None
+                async with self.session.get(
+                    self._rest_url + path, chunked=True, timeout=timeout
+                ) as response:
+                    if response.status == 200:
+                        self.http_connected = True
+                        body = await response.text()
+                        logger.info("HTTP Get response {}".format(body))
+                        # print(body)
+                        return True, body
+                
+                logger.warning ("Retrying HTTP Get Failed {} Try # {}".format(response,tries))
+                await asyncio.sleep(.5)
 
-        except Exception as ex:
-            self.http_connected = False
-            logger.error("HTTP Get Error {}".format(ex))
-            return False, None
+            except Exception as ex:
+                logger.warning("HTTP Get Error {}".format(ex))
+                self.http_connected = False
+                await asyncio.sleep(.5)
+
+        logger.error("HTTP request failed after {} tries. Status from last try error {}".format(tries,response.status))
+        return False, None
 
     def request(self, path, timeout):  # sync
         timeout = timeout or self._request_timeout
@@ -134,12 +139,12 @@ class Async_Session(object):
             return False, None
 
     def start_websocket(self):
-        self.websocket_task = self.loop.create_task(self.listen_forever())
+        self.websocket_task = asyncio.run_coroutine_threadsafe(self.listen_forever(),self.loop)
 
     async def listen_forever(self):
         logger.info("WebSocket Listen Forever Start")
 
-        await asyncio.sleep(5)
+        await asyncio.sleep(1)
 
         while self.keep_listening:
 

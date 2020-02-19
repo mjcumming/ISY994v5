@@ -34,16 +34,20 @@ class Variable_Container(Item_Container):
             vars_list = self.get_list("vars/get/" + var_type)
             defs_list = self.get_list("vars/definitions/" + var_type)
             self.process_variable_nodes(vars_list, defs_list)
-
+            return True
+       
         except Exception as error:
-            logger.warning("no variables found of type {}: {}".format(var_type, error))
+            logger.error("Error processing variabls of  type {}: {}".format(var_type, error))
+            return False
 
     def start(self):
-        # success = True
-        self.get_and_process("1")  # integer variables
-        self.get_and_process("2")  # state variables
-        self.items_retrieved = True
-        return True
+        success = True
+        if self.get_and_process("1") is False:  # integer variables
+            success = False
+        if self.get_and_process("2") is False: # state variables
+            success = False
+        self.items_retrieved = success
+        return success
 
     def process_variable_nodes(self, list_root, name_root):
         for node in list_root.iter("var"):

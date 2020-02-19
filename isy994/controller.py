@@ -150,8 +150,9 @@ class Controller(object):
         return success
 
     def connect_websocket(self):
-        logger.warning ('Starting Websocket')
+        logger.info ('Starting Websocket')
         self.session.start_websocket()
+        logger.info ('Started Websocket')
 
     def container_event(self, container, item, event, *args):
         logger.debug(
