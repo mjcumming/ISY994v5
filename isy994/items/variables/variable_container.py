@@ -22,7 +22,7 @@ class Variable_Container(Item_Container):
         Item_Container.__init__(self, controller, "Variable")
 
     def get_list(self, request_string):
-        success, response = self.send_request(request_string)
+        success, response = self.send_request(request_string, 2)
 
         if not success:
             raise Exception("no response for request: ", request_string)

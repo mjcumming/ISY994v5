@@ -117,3 +117,6 @@ dmypy.json
 .idea/
 .vscode/settings.json
 .vscode/settings.json
+.vscode/arduino.json
+.vscode/arduino.json
+.vscode/c_cpp_properties.json
