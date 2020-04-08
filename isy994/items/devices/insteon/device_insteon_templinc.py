@@ -4,7 +4,7 @@
 from ..common.device_thermostat import Device_Thermostat
 from .device_insteon_base import Device_Insteon_Base
 
-MODES = ["Off", "Heat", "Cool", "Auto", "Program Auto","Program Auto"]
+MODES = ["None","Off", "Heat", "Cool", "Auto", "Program Auto","Program Heat","Program Cool"]
 STATUS = ["Idle", "Heating", "Cooling"]
 
 FAN_MODES = {
@@ -79,6 +79,7 @@ class Device_Insteon_TempLinc(Device_Thermostat, Device_Insteon_Base):
                 self.set_property("systemstatus", 0)
 
     def process_websocket_event(self, event):
+        print ('event {}'.format(event))
         if event.control == "ST":
             self.set_property("temperature", round(float(event.action) / 2, 0))
         elif event.control == "CLISPH":
