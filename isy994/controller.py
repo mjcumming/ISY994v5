@@ -212,9 +212,9 @@ class Controller(object):
                 self.process_system_status(event)
 
         except Exception as ex:
-            logger.error("websocket handler Error {}".format(ex))
-            traceback.print_exc()
-
+            logger.error("websocket handler Event {} Error {}".format(event,ex))
+            logger.error(" {}".format(traceback.print_exc()))
+            
     def process_controller_event(self, property_, value):
         controller = self.controller_container.get("controller")
         controller.set_property(property_, value)
