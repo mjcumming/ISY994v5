@@ -7,15 +7,14 @@ returns a device instance using node data from an zwave device, None if unable t
 """
 
 from .device_zwave_controller import Device_ZWave_Controller
-from .device_zwave_lock import Device_ZWave_Lock
 from .device_zwave_genericrspctl import Device_ZWave_GenericRspCtl
 from .device_zwave_power import Device_ZWave_Power
 from .device_zwave_contact import Device_ZWave_Contact
+from .device_zwave_door_lock import Device_ZWave_Door_Lock
 
 
 zwave_device_classes = {
     "104" : Device_ZWave_Contact,
-    "111": Device_ZWave_Lock,
     # '118' : Device_ZWave_MultilevelSensor,
     "121": Device_ZWave_GenericRspCtl,
     # '140' : Device_ZWave_Thermostat,
@@ -27,6 +26,7 @@ zwave_device_classes = {
     # '173' : Device_ZWave_TamperCodeAlarm,
     "184" : Device_ZWave_Contact,
     "185" : Device_ZWave_Contact,
+    "111": Device_ZWave_Door_Lock,
 }
 
 
