@@ -5,7 +5,7 @@ from ..common.device_notification import Device_Notification
 from .device_zwave_base import Device_ZWave_Base
 
 
-class Device_ZWave_Notification_Sensor(Device_Notification, Device_ZWave_Base):
+class Device_ZWave_Notification(Device_Notification, Device_ZWave_Base):
     def __init__(self, container, device_info):
         Device_Notification.__init__(self, container, device_info.name, device_info.address)
         Device_ZWave_Base.__init__(self, device_info)

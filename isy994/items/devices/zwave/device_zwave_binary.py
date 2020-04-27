@@ -14,7 +14,7 @@ class Device_ZWave_Binary(Device_Binary, Device_ZWave_Base):
         if value:
             try:
                 self.set_property("binary", value)
-             except:
+            except:
                 pass
 
     def process_websocket_event(self, event):

@@ -12,7 +12,7 @@ from .device_zwave_on_off_power_switch import Device_ZWave_On_Off_Power_Switch
 from .device_zwave_energy_meter import Device_ZWave_Energy_Meter
 from .device_zwave_barrier import Device_ZWave_Barrier
 from .device_zwave_binary import Device_ZWave_Binary
-from .device_zwave_notification import Device_ZWave_Notification_Sensor
+from .device_zwave_notification import Device_ZWave_Notification
 
 
 zwave_device_classes = {
@@ -20,7 +20,7 @@ zwave_device_classes = {
     # "101": Device_ZWave_Unknown,
     # "102": Device_ZWave_Alarm,
     # "103": Device_ZWave_AV_Control_Point,
-    "104": Device_ZWave_Binary_Sensor,
+    "104": Device_ZWave_Binary,
     # "105": Device_ZWave_Class_A_Motor_Control,
     # "106": Device_ZWave_Class_B_Motor_Control,
     # "107": Device_ZWave_Class_C_Motor_Control,
@@ -101,7 +101,7 @@ zwave_device_classes = {
     # "182": Device_ZWave_Appliance,
     # "183": Device_ZWave_Home_Health,
     "184": Device_ZWave_Barrier,
-    "185": Device_ZWave_Notification_Sensor,
+    "185": Device_ZWave_Notification,
     # "186": Device_ZWave_Color_Switch,
     # "187": Device_ZWave_Multilevel_Switch_Off_On,
     # "188": Device_ZWave_Multilevel_Switch_Down_Up,

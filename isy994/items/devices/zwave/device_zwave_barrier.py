@@ -15,7 +15,7 @@ class Device_ZWave_Barrier(Device_Barrier, Device_ZWave_Base):
         value = device_info.get_property("ST", "value")
         if value:
             try:
-                self.set_property("barrier", int(value)))
+                self.set_property("barrier", int(value))
                 if (int(value) > 0 and int(value) < 100):
                     self.set_property("state", "percent closed")
                 else:
@@ -27,7 +27,7 @@ class Device_ZWave_Barrier(Device_Barrier, Device_ZWave_Base):
         action = int(event.action)
 
         if event.control == "ST":
-            self.set_property("barrier", action))
+            self.set_property("barrier", action)
             if (action > 0 and action < 100):
                 self.set_property("state", "percent closed")
             else:
