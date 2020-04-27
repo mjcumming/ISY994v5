@@ -4,7 +4,7 @@
 from ..common.device_base import Device_Base
 from .device_insteon_base import Device_Insteon_Base
 
-paddle_events = {"DON", "DOF", "DIM", "BRT", "DFON", "DFOF"}
+paddle_events = {"DON", "DON3", "DON4", "DON5", "DOF", "DOF3", "DOF4", "DOF5", "DIM", "BRT", "DFON", "DFOF", "FDUP", "FDDOWN", "FDSTOP"}
 
 
 class Device_Insteon_Controller(Device_Base, Device_Insteon_Base):

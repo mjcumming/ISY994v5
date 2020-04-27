@@ -4,7 +4,7 @@
 from ..common.device_dimmer import Device_Dimmer
 from .device_insteon_base import Device_Insteon_Base
 
-paddle_events = {"DON", "DOF", "DIM", "BRT", "DFON", "DFOF"}
+paddle_events = {"DON", "DON3", "DON4", "DON5", "DOF", "DOF3", "DOF4", "DOF5", "DIM", "BRT", "DFON", "DFOF", "FDUP", "FDDOWN", "FDSTOP"}
 
 
 class Device_Insteon_Dimmer(Device_Dimmer, Device_Insteon_Base):
@@ -33,6 +33,18 @@ class Device_Insteon_Dimmer(Device_Dimmer, Device_Insteon_Base):
 
     def set_level(self, level):
         path = "nodes/" + self.address + "/cmd/DON/" + str(int(level / 100 * 255))
+        return self.send_request(path)
+
+    # def fade_up(self):
+    #    path = "nodes/" + self.address + "/cmd/FDUP/startlevel/" + str(int(level / 100 * 255))
+    #    return self.send_request(path)
+
+    # def fade_down(self):
+    #    path = "nodes/" + self.address + "/cmd/FDDOWN/startlevel/" + str(int(level / 100 * 255))
+    #    return self.send_request(path)
+
+    def fade_stop(self):
+        path = "nodes/" + self.address + "/cmd/FDSTOP"
         return self.send_request(path)
 
     def fast_on(self):
