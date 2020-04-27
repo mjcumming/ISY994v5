@@ -10,9 +10,11 @@ from .device_zwave_controller import Device_ZWave_Controller
 from .device_zwave_lock import Device_ZWave_Lock
 from .device_zwave_genericrspctl import Device_ZWave_GenericRspCtl
 from .device_zwave_power import Device_ZWave_Power
+from .device_zwave_contact import Device_ZWave_Contact
 
 
 zwave_device_classes = {
+    "104" : Device_ZWave_Contact,
     "111": Device_ZWave_Lock,
     # '118' : Device_ZWave_MultilevelSensor,
     "121": Device_ZWave_GenericRspCtl,
@@ -23,7 +25,8 @@ zwave_device_classes = {
     # '157' : Device_ZWave_TamperAlarm,
     # '172' : Device_ZWave_IntrusionAlarm,
     # '173' : Device_ZWave_TamperCodeAlarm,
-    # '185' : Device_ZWave_NotificationSensor,
+    "184" : Device_ZWave_Contact,
+    "185" : Device_ZWave_Contact,
 }
 
 

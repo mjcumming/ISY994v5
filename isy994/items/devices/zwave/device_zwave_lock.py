@@ -21,7 +21,6 @@ class Device_ZWave_Lock(Device_Lock, Device_ZWave_Base):
                 pass
 
     def process_websocket_event(self, event):
-
         if event.control == "ST":
             state_map = {0: "Unlocked", 100: "Locked"}
             self.set_property("state", state_map[int(event.action)])
