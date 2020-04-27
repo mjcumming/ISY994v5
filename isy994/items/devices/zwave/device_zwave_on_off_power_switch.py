@@ -7,7 +7,7 @@ from .device_zwave_base import Device_ZWave_Base
 paddle_events = {"DON", "DOF", "DIM", "BRT", "DFON", "DFOF"}
 
 
-class Device_ZWave_GenericRspCtl(Device_Switch, Device_ZWave_Base):
+class Device_ZWave_On_Off_Power_Switch(Device_Switch, Device_ZWave_Base):
     def __init__(self, container, device_info):
         Device_Switch.__init__(self, container, device_info.name, device_info.address)
         Device_ZWave_Base.__init__(self, device_info)

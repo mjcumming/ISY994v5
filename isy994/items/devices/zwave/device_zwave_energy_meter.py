@@ -5,7 +5,7 @@ from ..common.device_power import Device_Power
 from .device_zwave_base import Device_ZWave_Base
 
 
-class Device_ZWave_Power(Device_Power, Device_ZWave_Base):
+class Device_ZWave_Energy_Meter(Device_Power, Device_ZWave_Base):
     def __init__(self, container, device_info):
         Device_Power.__init__(self, container, device_info.name, device_info.address)
         Device_ZWave_Base.__init__(self, device_info)
