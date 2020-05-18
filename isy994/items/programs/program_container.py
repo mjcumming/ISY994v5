@@ -67,5 +67,5 @@ class Program_Container(Item_Container):
             if program:
                 program.process_websocket_event(status, run_time, finish_time)
             else:
-                logger.warning("Unable able to find program type id {}".format(id))
+                logger.warning("Unable to find program type id {}".format(id))
 

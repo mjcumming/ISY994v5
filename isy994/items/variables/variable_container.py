@@ -35,9 +35,9 @@ class Variable_Container(Item_Container):
             defs_list = self.get_list("vars/definitions/" + var_type)
             self.process_variable_nodes(vars_list, defs_list)
             return True
-       
+
         except Exception as error:
-            logger.error("Error processing variabls of  type {}: {}".format(var_type, error))
+            logger.error("Error processing variables of type {}: {}".format(var_type, error))
             return False
 
     def start(self):
@@ -78,8 +78,8 @@ class Variable_Container(Item_Container):
             variable.process_websocket_event(event)
         else:
             logger.warning(
-                "Unable able to find variable type {} id {}".format(
-                    variable_id, variable_type
+                "Unable to find variable type {} id {}".format(
+                    variable_type, variable_id
                 )
             )
 
