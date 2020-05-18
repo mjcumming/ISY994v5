@@ -61,5 +61,4 @@ class Item_Container(object):
         self.event(item, "property", property_, value)
 
     def event(self, item, event, *args):  # publish event to controller
-        # print ('item event',self.container_type,item.name,event)
         self.controller.container_event(self, item, event, args)

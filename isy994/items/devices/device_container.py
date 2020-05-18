@@ -70,6 +70,8 @@ class Device_Container(Item_Container):
                     self.add(device, device.address)
                 else:
                     logger.warn("No device class for {}".format(device_info))
+        else:
+            logger.warning("Invalid device info {}".format(device_info))
 
     def websocket_event(self, event):
         # print('Device event',event)

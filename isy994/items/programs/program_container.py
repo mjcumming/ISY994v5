@@ -42,12 +42,17 @@ class Program_Container(Item_Container):
         program_info = Program_Info(node)  # parse node XML
 
         if program_info.valid:  # make sure we have the info we need
-            program = Program_Base(self, program_info)
-            self.add(program, program.id)
+            if program_info.folder is False:
+                program = Program_Base(self, program_info)
+                self.add(program, program.id)
+            else:
+                logger.debug("Folder program, no device created for {}".format(node.attrib))
+        else:
+            logger.warning("Invalid program info {}".format(node.attrib))
 
     def websocket_event(self, event):
         # print('Program event',event)
-        id = event.event_info_node.find("id").text.zfill(4)
+        _id = event.event_info_node.find("id").text.zfill(4)
 
         status = None
         run_time = None
@@ -63,9 +68,9 @@ class Program_Container(Item_Container):
             finish_time = event.event_info_node.find("f").text
 
         if status and run_time and finish_time:
-            program = self.get(id)
+            program = self.get(_id)
             if program:
                 program.process_websocket_event(status, run_time, finish_time)
             else:
-                logger.warning("Unable able to find program type id {}".format(id))
+                logger.warning("Unable able to find program type id {}".format(_id))
 

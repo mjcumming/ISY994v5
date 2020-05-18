@@ -37,7 +37,7 @@ class Variable_Container(Item_Container):
             return True
        
         except Exception as error:
-            logger.error("Error processing variabls of  type {}: {}".format(var_type, error))
+            logger.error("Error processing variabls of type {}: {}".format(var_type, error))
             return False
 
     def start(self):
@@ -47,6 +47,7 @@ class Variable_Container(Item_Container):
         if self.get_and_process("2") is False: # state variables
             success = False
         self.items_retrieved = success
+
         return success
 
     def process_variable_nodes(self, list_root, name_root):
@@ -65,6 +66,8 @@ class Variable_Container(Item_Container):
                         variable.name = variable_name.name
 
                 self.add(variable, variable.get_index())
+            else:
+                logger.warning("Invalid variable info {}".format(variable_info))
 
     def websocket_event(self, event):
         var = event.event_info_node.find("var")
