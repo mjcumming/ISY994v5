@@ -37,11 +37,7 @@ class Variable_Container(Item_Container):
             return True
 
         except Exception as error:
-<<<<<<< HEAD
-            logger.error("Error processing variabls of type {}: {}".format(var_type, error))
-=======
             logger.error("Error processing variables of type {}: {}".format(var_type, error))
->>>>>>> b28c533f124dfae0391eb4039474e24c891c11d7
             return False
 
     def start(self):
