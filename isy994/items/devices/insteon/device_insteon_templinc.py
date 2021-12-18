@@ -79,7 +79,8 @@ class Device_Insteon_TempLinc(Device_Thermostat, Device_Insteon_Base):
                 self.set_property("systemstatus", 0)
 
     def process_websocket_event(self, event):
-        print ('event {}'.format(event))
+        Device_Thermostat.process_websocket_event(self,event)
+
         if event.control == "ST":
             self.set_property("temperature", round(float(event.action) / 2, 0))
         elif event.control == "CLISPH":

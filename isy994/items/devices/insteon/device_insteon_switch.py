@@ -25,6 +25,8 @@ class Device_Insteon_Switch(Device_Switch, Device_Insteon_Base):
                 pass
 
     def process_websocket_event(self, event):
+        Device_Switch.process_websocket_event(self,event)
+
         if event.control == "ST":
             if int(event.action) > 0:
                 self.set_property("onoff", "on")
@@ -36,8 +38,10 @@ class Device_Insteon_Switch(Device_Switch, Device_Insteon_Base):
 
     def turn_on(self):
         path = "nodes/" + self.address + "/cmd/DON"
+        self.get_status()
         return self.send_request(path)
 
     def turn_off(self):
         path = "nodes/" + self.address + "/cmd/DOF"
+        self.get_status()
         return self.send_request(path)

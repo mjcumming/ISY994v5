@@ -21,9 +21,10 @@ class Device_Insteon_Contact(Device_Contact, Device_Insteon_Base):
                 pass
 
     def process_websocket_event(self, event):
+        Device_Contact.process_websocket_event(self,event)
+
         if event.control == "ST":
             if int(event.action) > 0:
                 self.set_property("contact", "open")
             else:
                 self.set_property("contact", "closed")
-

@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 
+
 """ 
 
 Base Device
@@ -18,6 +19,7 @@ class Item_Base(object):
         self.container = container
 
         self.name = name
+        self.last_send_request= "" # last request sent to the item
 
         self.properties = {
             "status": "init"
@@ -26,7 +28,7 @@ class Item_Base(object):
         self.property_event_handlers = []
 
     def process_websocket_event(self, event):
-        pass  # classes to override
+        pass
 
     def add_property(self, property_, value=None):
         self.properties[property_] = value
@@ -45,6 +47,7 @@ class Item_Base(object):
         return self.properties[property_]
 
     def send_request(self, path, timeout=None):
+        self.last_send_request = path
         return self.container.send_request(path, timeout)
 
     def add_property_event_handler(self, handler):

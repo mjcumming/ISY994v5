@@ -17,10 +17,8 @@ class Device_Insteon_Base(object):
         self.sub_category = device_info.sub_category
         self.version = device_info.version
         self.res = device_info.reserved
-        # self.address = device_info.address
         self.address_parts = device_info.address_parts
         self.flag = device_info.flag
-        # self.container_node_address = device_info.container_node_address
 
     @property
     def flag(self):

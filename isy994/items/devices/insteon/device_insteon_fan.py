@@ -19,6 +19,8 @@ class Device_Insteon_Fan(Device_Fan, Device_Insteon_Base):
             self.set_property("speed", self.level_to_speed(int(value)))
 
     def process_websocket_event(self, event):
+        Device_Fan.process_websocket_event(self,event)
+
         if event.control == "ST":
             self.set_property("speed", self.level_to_speed(int(event.action)))
 
