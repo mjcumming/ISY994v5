@@ -35,10 +35,10 @@ class Scene_Insteon(Scene_Base):
         for address in self.responders:
             device = self.container.get_device(address)
             if device is not None:
-                if device.category == "1":  # insteon dimmer
+                if device.device_type == "dimmer":  # insteon dimmer
                     if device.get_property("level") > 0:
                         scene_onoff = "on"
-                if device.category == "2":  # insteon switch
+                if device.device_type == "switch":  # insteon switch
                     if device.get_property("onoff") == "on":
                         scene_onoff = "on"
 
