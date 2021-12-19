@@ -19,7 +19,6 @@ class Item_Base(object):
         self.container = container
 
         self.name = name
-        self.last_send_request= None # last request sent to the item
 
         self.properties = {
             "status": "init"
@@ -49,7 +48,6 @@ class Item_Base(object):
         return self.properties[property_]
 
     def send_request(self, path, timeout=None):
-        self.last_send_request = path
         return self.container.send_request(path, timeout)
 
     def add_property_event_handler(self, handler):

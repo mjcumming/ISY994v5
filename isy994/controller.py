@@ -209,7 +209,8 @@ class Controller(object):
                     self.variable_container.websocket_event(event)
 
             elif event.control == "_3":  # node change
-                print ("NODE CHANGE {}".format(event))
+                pass
+                #print ("NODE CHANGE {}".format(event))
 
             elif event.control == "_5":  # system status
                 self.process_system_status(event)
