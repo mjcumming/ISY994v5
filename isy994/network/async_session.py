@@ -118,7 +118,7 @@ class Async_Session(object):
                 await asyncio.sleep(.5)
 
             except Exception as ex:
-                logger.warning("HTTP Get Error {}".format(ex))
+                logger.warning("HTTP Get Error {} for path".format(ex,path))
                 self.http_connected = False
                 await asyncio.sleep(.5)
 
@@ -132,10 +132,10 @@ class Async_Session(object):
             future = asyncio.run_coroutine_threadsafe(
                 self.request_async(path, timeout), self.loop
             )
-            return future.result(10)
+            return future.result(1)
 
         except Exception as ex:
-            logger.error("HTTP Get Error {}".format(ex))
+            logger.error("HTTP Get Error {} for path".format(ex,path))
             return False, None
 
     def start_websocket(self):

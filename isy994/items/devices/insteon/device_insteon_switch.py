@@ -38,10 +38,8 @@ class Device_Insteon_Switch(Device_Switch, Device_Insteon_Base):
 
     def turn_on(self):
         path = "nodes/" + self.address + "/cmd/DON"
-        self.get_status()
         return self.send_request(path)
 
     def turn_off(self):
         path = "nodes/" + self.address + "/cmd/DOF"
-        self.get_status()
         return self.send_request(path)

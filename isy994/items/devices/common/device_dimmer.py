@@ -11,5 +11,7 @@ class Device_Dimmer(Device_Base):
         self.add_property("level", 0)  # in percent
 
     def set_level(self, level):
-        pass
+        #self.set_property("level",level) # set in websocket return event
 
+        if self.get_property("status")=="alert":
+            print ("DEVICE IN ALERT STATE")

@@ -19,7 +19,7 @@ class Item_Base(object):
         self.container = container
 
         self.name = name
-        self.last_send_request= "" # last request sent to the item
+        self.last_send_request= None # last request sent to the item
 
         self.properties = {
             "status": "init"
@@ -39,6 +39,8 @@ class Item_Base(object):
         if self.properties[property_] != value or always_publish:
             self.properties[property_] = value
             self.container.property_change(self, property_, value)
+
+            #print("SET    {} {} {}".format (self.name, property_, value))
 
             for handler in self.property_event_handlers:
                 handler(property_, value)

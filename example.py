@@ -42,9 +42,11 @@ try:
         
         if dimmer is not None:
             dimmer.set_level (20)
+            dimmer.get_status()
 
         if switch is not None:
             switch.turn_on()
+            switch.get_status()
 
         time.sleep(2)
 

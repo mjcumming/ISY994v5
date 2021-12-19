@@ -11,8 +11,12 @@ class Device_Switch(Device_Base):
         self.add_property("onoff", "off")
 
     def turn_on(self):
-        pass
+        if self.get_property("status")=="alert":
+            print ("DEVICE IN ALERT STATE")
+            pass
 
     def turn_off(self):
-        pass
+        if self.get_property("status")=="alert":
+            print ("DEVICE IN ALERT STATE")
+            pass
 

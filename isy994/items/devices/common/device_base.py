@@ -38,20 +38,16 @@ class Device_Base(Item_Base):
     def send_request(self, path, timeout=None):
         self.last_send_request = path
         success,response = Item_Base.send_request(self,path,timeout)
-        
-        if Item_Base.get_property("status") == "alert": # request an update when sending a command in an alert state
-            self.get_status()
-
         return success,response
 
     def process_websocket_event(self, event):
         if event.control == "_3":
             if event.action == "NE": # comms error
                 self.set_property ('status','alert')
+                self.communication_failure()
+                #self.get_status()
             elif event.action == "CE": # comms error clear
                 self.set_property ('status','ready')
-
-            #print ("*****ERRROR STATE {} {}".format(self.name,self.get_property("status")))       
 
     def get_status(self): #isy status for node
         path = "status/" + self.address 
@@ -66,8 +62,16 @@ class Device_Base(Item_Base):
                     self.set_property ('status','ready')
                 elif int(node.attrib ["value"]) > 0:
                     self.set_property ('status','alert',True)  #always publish
+                    self.communications_failed()
 
             except Exception:
                 traceback.print_exc()
 
         return success, response
+
+    def communication_failure(self): # called when we receive a websocket event with a NE comm error
+        log.warn("Communication Failure for {}",self.address)
+
+    def communications_failed(self): # called when device status returns device in comm failed state
+        log.warn("Communications Failed for {}",self.address)
+
