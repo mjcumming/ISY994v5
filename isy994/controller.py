@@ -207,13 +207,17 @@ class Controller(object):
                     self.program_container.websocket_event(event)
                 elif event.action == "6":  # variable change
                     self.variable_container.websocket_event(event)
-
             elif event.control == "_3":  # node change
                 pass
+                #this error also seen in event_control 2021-12-21 06:53:32,326 - isy994.controller - INFO - Websocket Event Event: Address 42 C8 99 1, Control _3, Action NE, Event Info None
                 #print ("NODE CHANGE {}".format(event))
 
             elif event.control == "_5":  # system status
                 self.process_system_status(event)
+
+#2021-12-21 06:53:32,313 - isy994.controller - INFO - Websocket Event Event: Address 42 C8 99 1, Control ERR, Action 1, Event Info None
+
+
 
         except Exception as ex:
             logger.error("websocket handler Event {} Error {}".format(event,ex))

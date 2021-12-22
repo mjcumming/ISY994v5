@@ -32,7 +32,10 @@ class Device_Base(Item_Base):
         self.last_command_time = None # time last command sent
         self.last_command_retry_interval = 10 # if device status changes time to allow for retry
 
-        self.add_property("communication_error_count",0) # number of time the device enters an alert state
+        self.add_property("communication_ok",True) # False means in a failed state
+        self.add_property("communication_error_count",0) # number of time there is a failed communication
+        self.add_property("communication_error_state_count",0) # number of time the device enters an alert state
+        self.add_property("communication_requests",0) # number of time the device we senda request to a device
 
     def __str__(self):
         return "Device {}, type {}, ID {}".format(
@@ -43,6 +46,10 @@ class Device_Base(Item_Base):
         return self.address
     
     def send_request(self, path, timeout=None):
+        self.set_property("communication_requests",self.get_property("communication_requests")+1)
+        if self.get_property("communication_ok") is False:
+            self.set_property("communication_error_count",self.get_property("communication_error_count")+1)
+
         self.last_command_path = path
         self.last_command_time = datetime.now()
         success,response = Item_Base.send_request(self,path,timeout)
@@ -51,12 +58,9 @@ class Device_Base(Item_Base):
     def process_websocket_event(self, event):
         if event.control == "_3":
             if event.action == "NE": # comms error
-                self.set_property ('status','alert')
                 self.communication_failure()
-                #self.get_status()
             elif event.action == "CE": # comms error clear
-                self.set_property ('status','ready')
-                #print('comms error cleareed!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+                self.communications_restored()
 
     def get_status(self): #isy status for node
         path = "status/" + self.address 
@@ -68,7 +72,7 @@ class Device_Base(Item_Base):
                 node = (root.find(".//property[@id='ERR']"))
 
                 if int(node.attrib ["value"]) == 0:
-                    self.set_property ('status','ready')
+                    self.communications_restored()
                 elif int(node.attrib ["value"]) > 0:
                     self.set_property ('status','alert',True)  #always publish
                     self.communications_failed()
@@ -79,8 +83,9 @@ class Device_Base(Item_Base):
         return success, response
 
     def communication_failure(self): # called when we receive a websocket event with a NE comm error
-        #print("******************Communication Failure for {}",self.address)
-        self.set_property("communication_error_count",self.get_property("communication_error_count")+1)
+        self.set_property ('status','alert')
+        self.set_property("communication_error_state_count",self.get_property("communication_error_state_count")+1)
+        self.set_property("communication_ok",False) 
 
         if self.last_command_path is not None:
             if (datetime.now()-self.last_command_time).seconds <= self.last_command_retry_interval:
@@ -93,6 +98,11 @@ class Device_Base(Item_Base):
                 th.start()                
 
     def communications_failed(self): # called when device status returns device in comm failed state
-        #print("!!!!!!!!!!!!!!!!!!!!!!Communications Failed for {}",self.address)
+        self.set_property ('status','alert')
+        self.set_property("communication_error_state_count",self.get_property("communication_error_state_count")+1)
+        self.set_property("communication_ok",False) 
         pass
 
+    def communications_restored(self):
+        self.set_property ('status','ready')
+        self.set_property("communication_ok",True) 
