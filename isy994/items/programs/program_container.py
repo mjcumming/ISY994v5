@@ -32,6 +32,10 @@ class Program_Container(Item_Container):
                 logger.error("container error {}".format(ex))
                 traceback.print_exc()
         else:
+            if response.status == 404: # not found
+                logger.warn("No Programs {}".format(response))
+                return True
+
             return False
 
     def process_program_nodes(self, root):

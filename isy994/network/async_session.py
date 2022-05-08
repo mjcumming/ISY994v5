@@ -113,7 +113,12 @@ class Async_Session(object):
                         logger.info("HTTP Get response {}".format(body))
                         # print(body)
                         return True, body
-                
+
+                    elif response.status == 404: # not found
+                        self.http_connected = True
+                        logger.info("HTTP Not Found")
+                        return False, response
+
                 logger.warning ("Retrying HTTP Get Failed {} Try # {}".format(response,tries))
                 await asyncio.sleep(.5)
 

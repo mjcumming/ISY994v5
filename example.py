@@ -3,7 +3,7 @@ import time
 
 from isy994.controller import Controller
 
-url = '192.168.1.51'
+url = '192.168.1.127'
 #url = None # use autodiscovery
 
 dimmer_address = '14 26 A6 1' # dimmer to flash on/off

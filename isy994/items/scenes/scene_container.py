@@ -43,18 +43,22 @@ class Scene_Container(Item_Container):
             self.process_scene_node(scene)
 
     def process_scene_node(self, node):
-        scene_info = Scene_Info(node)
 
-        if scene_info.valid:  # make sure we have the info we need
-            # print('process scene',scene_info)
-            if scene_info.family in scene_classes:
-                scene_class = scene_classes[scene_info.family]
+        if "nodeDefId" in node.attrib:
+            scene_info = Scene_Info(node)
 
-                scene = scene_class(self, scene_info)
-                scene.update_onoff()
-                self.add(scene, scene.address)
+            if scene_info.valid:  # make sure we have the info we need
+                # print('process scene',scene_info)
+                if scene_info.family in scene_classes:
+                    scene_class = scene_classes[scene_info.family]
+
+                    scene = scene_class(self, scene_info)
+                    scene.update_onoff()
+                    self.add(scene, scene.address)
+            else:
+                logger.warn("Invalid scene info {}".format(scene_info))
         else:
-            logger.warn("Invalid scene info {}".format(scene_info.name))
+            logger.warn("Invalid scene info, nodeDefId {}".format(node))
 
     def device_event(
         self, device
